@@ -1,4 +1,3 @@
-// app/prints/page.tsx
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -10,6 +9,11 @@ import Footer from "@/components/footer";
 import PrintsCartDrawer from "@/components/prints-cart-drawer";
 import { urlForImage, type Print } from "@/lib/sanity";
 import { openCart } from "@/lib/cart";
+
+// δέχεται μόνο αυτά τα δύο, αλλιώς undefined
+function isCartStage(x: unknown): x is "cart" | "checkout" {
+  return x === "cart" || x === "checkout";
+}
 
 export default function PrintsPage() {
   const [prints, setPrints] = useState<Print[]>([]);
@@ -27,7 +31,8 @@ export default function PrintsPage() {
     const cartOpen = searchParams.get("cart") === "open";
     if (!cartOpen) return;
 
-    const stage = searchParams.get("stage") || undefined;
+    const stageRaw = searchParams.get("stage") || undefined;
+    const stage = isCartStage(stageRaw) ? stageRaw : undefined;
 
     // Αποφυγή διπλού ανοίγματος σε Strict Mode
     if (!handledQueryOnceRef.current) {
@@ -52,7 +57,8 @@ export default function PrintsPage() {
       const flag =
         sessionStorage.getItem("cart:open-on-load") === "1" ||
         sessionStorage.getItem("cart:open") === "1";
-      const stage = sessionStorage.getItem("cart:open-stage") || undefined;
+      const stageRaw = sessionStorage.getItem("cart:open-stage") || undefined;
+      const stage = isCartStage(stageRaw) ? stageRaw : undefined;
       if (flag) {
         sessionStorage.removeItem("cart:open-on-load");
         sessionStorage.removeItem("cart:open");
@@ -106,7 +112,7 @@ export default function PrintsPage() {
     <>
       <Navigation />
 
-      {/* Μόνο το drawer (ανοίγει από “Go to Checkout” ή από header icon αν έχεις) */}
+      {/* Drawer του cart */}
       <PrintsCartDrawer />
 
       <div className="min-h-screen bg-black pt-20">

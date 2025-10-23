@@ -85,7 +85,7 @@ export default function PrintModal({
       imgUrl(print.image, 400, 500) || "/placeholder.svg?height=500&width=400";
 
     const newItem: CartItem = {
-      id,
+      id, // <-- μοναδικό ID προϊόντος + size
       printId: print._id,
       title: print.title,
       slug: print.slug?.current || "",
@@ -99,8 +99,9 @@ export default function PrintModal({
   }
 
   function goCheckout() {
-    openCart();
+    openCart("checkout");
     // αν θέλεις, μπορείς να κάνεις close() εδώ
+    // close();
   }
 
   return (

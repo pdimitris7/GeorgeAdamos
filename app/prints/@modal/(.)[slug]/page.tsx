@@ -11,5 +11,5 @@ export default async function PrintStandalonePage({
 }) {
   const print = await getPrintBySlug(params.slug);
   if (!print) return notFound();
-  return <PrintModal print={print} mode="standalone" />;
+  return <PrintModal print={print} mode="overlay" />;
 }
