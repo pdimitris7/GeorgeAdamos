@@ -78,7 +78,7 @@ export default function PrintModal({
     print.availableSizes?.find((s) => s.size === selectedSize)?.price ?? 0;
 
   function addToCart() {
-    if (!selectedSize || !selectedPrice) return;
+    if (!print || !selectedSize || !selectedPrice) return;
 
     const id = `${print._id}@${selectedSize}`;
     const imageUrl =
