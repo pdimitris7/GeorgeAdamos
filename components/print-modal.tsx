@@ -23,9 +23,14 @@ function imgUrl(raw: any, w?: number, h?: number) {
   return undefined;
 }
 
-type Props = { print: Print | null; onClose?: () => void };
+type Mode = "overlay" | "page";
+type Props = { print: Print | null; onClose?: () => void; mode?: Mode };
 
-export default function PrintModal({ print, onClose }: Props) {
+export default function PrintModal({
+  print,
+  onClose,
+  mode = "overlay",
+}: Props) {
   const router = useRouter();
   const close = useCallback(() => {
     if (onClose) onClose();
