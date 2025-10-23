@@ -1,4 +1,3 @@
-// components/print-modal.tsx
 "use client";
 
 import { useEffect, useMemo, useCallback, useState } from "react";
@@ -23,8 +22,13 @@ function imgUrl(raw: any, w?: number, h?: number) {
   return undefined;
 }
 
-type Mode = "overlay" | "page";
-type Props = { print: Print | null; onClose?: () => void; mode?: Mode };
+type Mode = "overlay" | "page" | "standalone";
+
+type Props = {
+  print: Print | null;
+  onClose?: () => void;
+  mode?: Mode;
+};
 
 export default function PrintModal({
   print,
@@ -32,14 +36,16 @@ export default function PrintModal({
   mode = "overlay",
 }: Props) {
   const router = useRouter();
+  const isOverlay = mode === "overlay";
+
   const close = useCallback(() => {
     if (onClose) onClose();
     else router.back();
   }, [onClose, router]);
 
-  // Lock scroll + ESC
+  // Lock scroll + ESC ΜΟΝΟ σε overlay
   useEffect(() => {
-    if (!print) return;
+    if (!print || !isOverlay) return;
     document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
     window.addEventListener("keydown", onKey);
@@ -47,7 +53,7 @@ export default function PrintModal({
       document.body.style.overflow = "";
       window.removeEventListener("keydown", onKey);
     };
-  }, [print, close]);
+  }, [print, close, isOverlay]);
 
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [qty, setQty] = useState<number>(1);
@@ -93,40 +99,50 @@ export default function PrintModal({
   }
 
   function goCheckout() {
-    // Θα ανοίξει το drawer στο route /prints (παραμένεις στο ίδιο route)
     openCart();
-    // option: άφησε το modal ανοιχτό ή κλείστο
-    // close();
+    // αν θέλεις, μπορείς να κάνεις close() εδώ
   }
 
   return (
-    <div className="fixed inset-0 z-50">
-      <div
-        className="absolute inset-0 bg-gradient-to-b from-black via-black to-black/95 backdrop-blur-sm"
-        onClick={close}
-        aria-hidden="true"
-      />
-
-      <button
-        onClick={close}
-        aria-label="Close"
-        className="fixed top-4 right-4 md:top-6 md:right-6 z-[60] p-2 md:p-3 text-white/70 hover:text-white transition-all duration-300 group bg-black/50 md:bg-transparent"
-      >
-        <X
-          className="h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7 group-hover:rotate-90 transition-transform duration-300"
-          strokeWidth={1}
+    <div className={isOverlay ? "fixed inset-0 z-50" : "relative z-10"}>
+      {isOverlay && (
+        <div
+          className="absolute inset-0 bg-gradient-to-b from-black via-black to-black/95 backdrop-blur-sm"
+          onClick={close}
+          aria-hidden="true"
         />
-      </button>
+      )}
+
+      {isOverlay && (
+        <button
+          onClick={close}
+          aria-label="Close"
+          className="fixed top-4 right-4 md:top-6 md:right-6 z-[60] p-2 md:p-3 text-white/70 hover:text-white transition-all duration-300 group bg-black/50 md:bg-transparent"
+        >
+          <X
+            className="h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7 group-hover:rotate-90 transition-transform duration-300"
+            strokeWidth={1}
+          />
+        </button>
+      )}
 
       <div
-        className="absolute inset-0 flex items-center justify-center p-2 sm:p-4 md:p-6 lg:p-8"
-        onClick={close}
+        className={
+          isOverlay
+            ? "absolute inset-0 flex items-center justify-center p-2 sm:p-4 md:p-6 lg:p-8"
+            : "w-full p-2 sm:p-4 md:p-6 lg:p-8"
+        }
+        onClick={isOverlay ? close : undefined}
       >
         <div
           role="dialog"
-          aria-modal="true"
-          className="relative w-full max-w-6xl max-h-[95vh] md:max-h-[90vh] bg-black border border-white/10 overflow-hidden shadow-2xl"
-          onClick={(e) => e.stopPropagation()}
+          aria-modal={isOverlay ? "true" : undefined}
+          className={
+            isOverlay
+              ? "relative w-full max-w-6xl max-h-[95vh] md:max-h-[90vh] bg-black border border-white/10 overflow-hidden shadow-2xl"
+              : "relative w-full max-w-6xl mx-auto bg-black border border-white/10 overflow-hidden shadow-2xl"
+          }
+          onClick={isOverlay ? (e) => e.stopPropagation() : undefined}
         >
           <div className="flex flex-col md:flex-row-reverse h-full max-h-[95vh] md:max-h-[90vh]">
             <div className="relative w-full md:w-1/2 aspect-[3/4] sm:aspect-[4/5] md:aspect-auto md:h-[90vh] overflow-hidden border-b md:border-b-0 md:border-l border-white/10 flex-shrink-0">
