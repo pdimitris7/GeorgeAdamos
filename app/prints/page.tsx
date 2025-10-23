@@ -1,6 +1,7 @@
+// app/prints/page.tsx
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
@@ -10,12 +11,14 @@ import PrintsCartDrawer from "@/components/prints-cart-drawer";
 import { urlForImage, type Print } from "@/lib/sanity";
 import { openCart } from "@/lib/cart";
 
+export const dynamic = "force-dynamic";
+
 // δέχεται μόνο αυτά τα δύο, αλλιώς undefined
 function isCartStage(x: unknown): x is "cart" | "checkout" {
   return x === "cart" || x === "checkout";
 }
 
-export default function PrintsPage() {
+function PrintsPageInner() {
   const [prints, setPrints] = useState<Print[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -216,5 +219,19 @@ export default function PrintsPage() {
 
       <Footer />
     </>
+  );
+}
+
+export default function PrintsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-black pt-20 text-white/70 p-6">
+          Loading…
+        </div>
+      }
+    >
+      <PrintsPageInner />
+    </Suspense>
   );
 }
