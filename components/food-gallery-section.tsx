@@ -26,9 +26,7 @@ export default function FoodGallerySection() {
           observer.unobserve(entry.target);
         }
       },
-      {
-        threshold: 0.1,
-      }
+      { threshold: 0.1 }
     );
 
     if (sectionRef.current) {
@@ -52,22 +50,25 @@ export default function FoodGallerySection() {
     document.body.style.overflow = "";
   };
 
+  // FIX: χωρίς functional updater -> δεν υπάρχει πιθανό null "prev"
   const nextImage = () => {
     if (selectedImage === null) return;
-    setSelectedImage((prev) =>
-      prev === foodGalleryImages.length - 1 ? 0 : prev + 1
-    );
+    const next =
+      selectedImage === foodGalleryImages.length - 1 ? 0 : selectedImage + 1;
+    setSelectedImage(next);
   };
 
   const prevImage = () => {
     if (selectedImage === null) return;
-    setSelectedImage((prev) =>
-      prev === 0 ? foodGalleryImages.length - 1 : prev - 1
-    );
+    const prev =
+      selectedImage === 0 ? foodGalleryImages.length - 1 : selectedImage - 1;
+    setSelectedImage(prev);
   };
 
-  // Close on escape key
+  // Close on escape / navigate με βελάκια ΜΟΝΟ όταν είναι ανοιχτό
   useEffect(() => {
+    if (selectedImage === null) return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") closeImage();
       if (e.key === "ArrowRight") nextImage();
@@ -76,6 +77,7 @@ export default function FoodGallerySection() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedImage]);
 
   return (
@@ -118,7 +120,7 @@ export default function FoodGallerySection() {
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-navy/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-navy/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
             </div>
           ))}
