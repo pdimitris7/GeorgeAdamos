@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 0%; /* Black background */
+    --foreground: 0 0% 100%; /* White text */
+    --card: 0 0% 10%; /* Dark gray for cards */
+    --card-foreground: 0 0% 90%; /* Light gray for card text */
+    --popover: 0 0% 100%; /* White for popovers */
+    --popover-foreground: 0 0% 0%; /* Black text for popovers */
+    --primary: 29 96% 44%; /* Amber for primary elements */
+    --primary-foreground: 0 0% 0%; /* Black text on amber */
+    --secondary: 0 0% 10%; /* Dark gray for secondary */
+    --secondary-foreground: 0 0% 90%; /* Light gray text */
+    --muted: 0 0% 10%; /* Muted background */
+    --muted-foreground: 0 0% 90%; /* Light gray for muted text */
+    --accent: 29 96% 44%; /* Amber for accents */
+    --accent-foreground: 0 0% 0%; /* Black text on accent */
+    --destructive: 0 84% 60%; /* Red for errors */
+    --destructive-foreground: 0 0% 100%; /* White text on red */
+    --border: 0 0% 10%; /* Dark gray borders */
+    --input: 0 0% 100%; /* White inputs */
+    --ring: 29 96% 44%; /* Amber focus rings */
+    --radius: 0.5rem;
+    --scroll-behavior: smooth !important;
+    scroll-behavior: smooth !important;
+  }
+}
+
+body {
+  @apply antialiased bg-background text-foreground;
+}
+
+@layer components {
+  .container-custom {
+    @apply container mx-auto px-4 md:px-8 max-w-7xl;
+  }
+
+  .section-padding {
+    @apply py-16 md:py-24;
+  }
+
+  .heading-xl {
+    @apply font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground;
+  }
+
+  .heading-lg {
+    @apply font-serif text-3xl md:text-4xl font-bold text-foreground;
+  }
+
+  .heading-md {
+    @apply font-serif text-2xl md:text-3xl font-bold text-foreground;
+  }
+
+  .heading-sm {
+    @apply font-serif text-xl md:text-2xl font-bold text-foreground;
+  }
+
+  .body-lg {
+    @apply text-lg leading-relaxed text-muted-foreground;
+  }
+
+  .body-md {
+    @apply text-base leading-relaxed text-muted-foreground;
+  }
+
+  .body-sm {
+    @apply text-sm leading-relaxed text-muted-foreground;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--muted));
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--accent));
+}
+
+/* Smooth transitions */
+.transition-all {
+  transition-duration: 300ms;
+}
