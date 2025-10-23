@@ -16,7 +16,7 @@ export default function PrintsCartButton() {
 
   return (
     <button
-      onClick={openCart}
+      onClick={() => openCart()}
       className="fixed right-4 bottom-4 z-40 inline-flex items-center gap-2 px-4 py-2 bg-white text-black rounded-md shadow hover:bg-gray-200 transition-colors"
       aria-label="Open cart"
     >
