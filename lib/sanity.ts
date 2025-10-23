@@ -15,14 +15,11 @@ const apiVersion = (
 ).replace(/^v/i, "");
 const token = process.env.SANITY_READ_TOKEN;
 
-// NOTE: Το ίδιο client χρησιμοποιείται και σε client components (π.χ. useEffect).
-// ΜΗ βάλεις token σε .env αν δεν χρειάζεται, για να μην "δέσει" στο client bundle.
 export const client = createClient({
   projectId,
   dataset,
   apiVersion,
   token: token || undefined,
-  // Realtime dev: απενεργοποιούμε CDN για να βλέπεις άμεσα αλλαγές.
   useCdn: false,
 });
 
@@ -31,10 +28,6 @@ export const client = createClient({
    ========================================= */
 const builder = imageUrlBuilder({ projectId, dataset });
 
-/**
- * Επιστρέφει Sanity image-url builder για χρήση τύπου:
- *   urlForImage(img).width(1600).height(1200).fit("max").url()
- */
 export function urlForImage(src?: any) {
   if (!src) return undefined;
   const ref = src?.asset?._ref || src?._ref || src?.asset?._id || null;
@@ -58,9 +51,9 @@ export type PortfolioProject = {
   category: string;
   heroImage: any;
   description?: string;
-  gridClass?: string; // για homepage layout
-  order?: number; // ordering
-  isFeatured?: boolean; // "Show on Homepage" στο schema
+  gridClass?: string;
+  order?: number;
+  isFeatured?: boolean;
   gallery?: any[];
 };
 
@@ -69,13 +62,13 @@ export type MediaPost = {
   title: string;
   slug: Slug;
   publication: string;
-  category: string; // free text
+  category: string;
   excerpt: string;
   featuredImage?: any;
   externalLink?: string;
-  showOnHome?: boolean; // flag για homepage
+  showOnHome?: boolean;
   order?: number;
-  publishedDate?: string; // optional για παλιά docs
+  publishedDate?: string;
   gallery?: any[];
 };
 
@@ -94,8 +87,6 @@ export type Print = {
 /* =========================================
    QUERIES – PORTFOLIO
    ========================================= */
-
-/** Homepage: μόνο όσα έχουν "Show on Homepage" (isFeatured = true) */
 export async function getHomePortfolioProjects(): Promise<PortfolioProject[]> {
   const QUERY = groq`
     *[_type == "portfolio" && coalesce(isFeatured, false) == true && !(_id in path("drafts.**"))]
@@ -107,7 +98,6 @@ export async function getHomePortfolioProjects(): Promise<PortfolioProject[]> {
   return client.fetch(QUERY, {}, { perspective: "published" });
 }
 
-/** Όλα τα portfolio projects (για τη σελίδα /portfolio) */
 export async function getAllPortfolioProjects(): Promise<PortfolioProject[]> {
   const QUERY = groq`
     *[_type == "portfolio" && !(_id in path("drafts.**"))]
@@ -119,7 +109,6 @@ export async function getAllPortfolioProjects(): Promise<PortfolioProject[]> {
   return client.fetch(QUERY, {}, { perspective: "published" });
 }
 
-/** Ένα project by slug */
 export async function getPortfolioBySlug(
   slug: string
 ): Promise<PortfolioProject | null> {
@@ -135,8 +124,6 @@ export async function getPortfolioBySlug(
 /* =========================================
    QUERIES – MEDIA
    ========================================= */
-
-/** Homepage: μόνο όσα έχουν "Show on Home" (showOnHome = true) */
 export async function getHomeMediaPosts(): Promise<MediaPost[]> {
   const QUERY = groq`
     *[_type == "mediaPost" && coalesce(showOnHome, false) == true && !(_id in path("drafts.**"))]
@@ -149,7 +136,6 @@ export async function getHomeMediaPosts(): Promise<MediaPost[]> {
   return client.fetch(QUERY, {}, { perspective: "published" });
 }
 
-/** Όλα τα media posts (για /media) */
 export async function getAllMediaPosts(): Promise<MediaPost[]> {
   const QUERY = groq`
     *[_type == "mediaPost" && !(_id in path("drafts.**"))]
@@ -162,7 +148,6 @@ export async function getAllMediaPosts(): Promise<MediaPost[]> {
   return client.fetch(QUERY, {}, { perspective: "published" });
 }
 
-/** Ένα media post by slug */
 export async function getMediaBySlug(slug: string): Promise<MediaPost | null> {
   const QUERY = groq`
     *[_type == "mediaPost" && slug.current == $slug && !(_id in path("drafts.**"))][0]{
@@ -201,3 +186,9 @@ export async function getPrintBySlug(slug: string): Promise<Print | null> {
 }
 
 export { groq };
+
+/* =========================================
+   ALIASES για να δουλέψουν οι υπάρχουσες σελίδες
+   ========================================= */
+export { getPortfolioBySlug as getPortfolioProject };
+export { getHomePortfolioProjects as getFeaturedPortfolioProjects };
