@@ -1,2 +1,3 @@
-// lib/sanity.ts
-export * from "./sanity.base";
+// lib/sanity.server.ts
+import "server-only";
+export * from "./sanity";
