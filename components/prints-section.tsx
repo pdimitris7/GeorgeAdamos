@@ -4,7 +4,7 @@
 import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { getAllPrints, urlForImage, type Print } from "@/lib/sanity";
+import { urlForImage, type Print } from "@/lib/sanity-public";
 import PrintModal from "@/components/print-modal";
 
 export default function PrintsSection() {
@@ -18,9 +18,11 @@ export default function PrintsSection() {
     let mounted = true;
     (async () => {
       try {
-        // μπορείς να το αλλάξεις να χτυπάει /api/prints/all αν προτιμάς server route
-        const data = await getAllPrints();
-        if (mounted) setPrints(data.slice(0, 6)); // δείξε 6 στην αρχική
+        // Server route με caching (δες πιο κάτω το /api/prints/all)
+        const res = await fetch("/api/prints/all", { cache: "force-cache" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data: Print[] = await res.json();
+        if (mounted) setPrints((data || []).slice(0, 6));
       } catch (e) {
         console.error("Error fetching prints:", e);
         if (mounted) setPrints([]);

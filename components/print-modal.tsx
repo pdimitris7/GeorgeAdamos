@@ -1,10 +1,11 @@
+// components/print-modal.tsx
 "use client";
 
 import { useEffect, useMemo, useCallback, useState } from "react";
 import Image from "next/image";
 import { X, Check } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { urlForImage, type Print } from "@/lib/sanity";
+import { urlForImage, type Print } from "@/lib/sanity-public";
 import { addOrMerge, openCart, type CartItem } from "@/lib/cart";
 
 function imgUrl(raw: any, w?: number, h?: number) {
@@ -22,30 +23,18 @@ function imgUrl(raw: any, w?: number, h?: number) {
   return undefined;
 }
 
-type Mode = "overlay" | "page" | "standalone";
+type Props = { print: Print | null; onClose?: () => void };
 
-type Props = {
-  print: Print | null;
-  onClose?: () => void;
-  mode?: Mode;
-};
-
-export default function PrintModal({
-  print,
-  onClose,
-  mode = "overlay",
-}: Props) {
+export default function PrintModal({ print, onClose }: Props) {
   const router = useRouter();
-  const isOverlay = mode === "overlay";
-
   const close = useCallback(() => {
     if (onClose) onClose();
     else router.back();
   }, [onClose, router]);
 
-  // Lock scroll + ESC ΜΟΝΟ σε overlay
+  // Lock scroll + ESC
   useEffect(() => {
-    if (!print || !isOverlay) return;
+    if (!print) return;
     document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
     window.addEventListener("keydown", onKey);
@@ -53,7 +42,7 @@ export default function PrintModal({
       document.body.style.overflow = "";
       window.removeEventListener("keydown", onKey);
     };
-  }, [print, close, isOverlay]);
+  }, [print, close]);
 
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [qty, setQty] = useState<number>(1);
@@ -78,14 +67,14 @@ export default function PrintModal({
     print.availableSizes?.find((s) => s.size === selectedSize)?.price ?? 0;
 
   function addToCart() {
-    if (!print || !selectedSize || !selectedPrice) return;
+    if (!selectedSize || !selectedPrice) return;
 
     const id = `${print._id}@${selectedSize}`;
     const imageUrl =
       imgUrl(print.image, 400, 500) || "/placeholder.svg?height=500&width=400";
 
     const newItem: CartItem = {
-      id, // <-- μοναδικό ID προϊόντος + size
+      id,
       printId: print._id,
       title: print.title,
       slug: print.slug?.current || "",
@@ -99,54 +88,40 @@ export default function PrintModal({
   }
 
   function goCheckout() {
-    openCart("checkout");
-    // αν θέλεις, μπορείς να κάνεις close() εδώ
+    // Θα ανοίξει το drawer στο route /prints (παραμένεις στο ίδιο route)
+    openCart();
+    // option: άφησε το modal ανοιχτό ή κλείστο
     // close();
   }
 
   return (
-    <div className={isOverlay ? "fixed inset-0 z-50" : "relative z-10"}>
-      {isOverlay && (
-        <div
-          className="absolute inset-0 bg-gradient-to-b from-black via-black to-black/95 backdrop-blur-sm"
-          onClick={close}
-          aria-hidden="true"
-        />
-      )}
-
-      {isOverlay && (
-        <button
-          onClick={close}
-          aria-label="Close"
-          className="fixed top-4 right-4 md:top-6 md:right-6 z-[60] p-2 md:p-3 text-white/70 hover:text-white transition-all duration-300 group bg-black/50 md:bg-transparent"
-        >
-          <X
-            className="h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7 group-hover:rotate-90 transition-transform duration-300"
-            strokeWidth={1}
-          />
-        </button>
-      )}
-
+    <div className="fixed inset-0 z-50">
       <div
-        className={
-          isOverlay
-            ? "absolute inset-0 flex items-center justify-center p-2 sm:p-4 md:p-6 lg:p-8"
-            : "w-full p-2 sm:p-4 md:p-6 lg:p-8"
-        }
-        onClick={isOverlay ? close : undefined}
+        className="absolute inset-0 bg-gradient-to-b from-black via-black to-black/95 backdrop-blur-sm"
+        onClick={close}
+        aria-hidden="true"
+      />
+      <button
+        onClick={close}
+        className="fixed top-6 right-6 text-white hover:text-gray-300 transition-colors z-[60]"
+        aria-label="Close"
+      >
+        <X size={32} strokeWidth={1.5} />
+      </button>
+      ;
+      <div
+        className="fixed inset-0 flex items-start sm:items-center justify-center overflow-y-auto overscroll-contain"
+        onClick={close}
       >
         <div
           role="dialog"
-          aria-modal={isOverlay ? "true" : undefined}
-          className={
-            isOverlay
-              ? "relative w-full max-w-6xl max-h-[95vh] md:max-h-[90vh] bg-black border border-white/10 overflow-hidden shadow-2xl"
-              : "relative w-full max-w-6xl mx-auto bg-black border border-white/10 overflow-hidden shadow-2xl"
-          }
-          onClick={isOverlay ? (e) => e.stopPropagation() : undefined}
+          aria-modal="true"
+          className="relative w-full max-w-6xl mt-8 sm:mt-4 md:mt-8 mb-0 sm:mb-4 md:mb-8 bg-black border-0 sm:border border-white/10 shadow-2xl min-h-[calc(100vh-2rem)] sm:min-h-0 sm:max-h-[90vh]"
+          onClick={(e) => e.stopPropagation()}
+          style={{ paddingTop: "env(safe-area-inset-top)" }}
         >
-          <div className="flex flex-col md:flex-row-reverse h-full max-h-[95vh] md:max-h-[90vh]">
-            <div className="relative w-full md:w-1/2 aspect-[3/4] sm:aspect-[4/5] md:aspect-auto md:h-[90vh] overflow-hidden border-b md:border-b-0 md:border-l border-white/10 flex-shrink-0">
+          <div className="flex flex-col md:flex-row-reverse min-h-screen sm:min-h-0 sm:max-h-[90vh]">
+            <div className="relative w-full md:w-1/2 h-[50vh] sm:h-[60vh] md:h-auto md:min-h-[90vh] overflow-hidden border-b md:border-b-0 md:border-l border-white/10 flex-shrink-0 pt-4 sm:pt-0">
               <Image
                 src={heroUrl || "/placeholder.svg"}
                 alt={print.title}
@@ -157,12 +132,12 @@ export default function PrintModal({
               />
             </div>
 
-            <div className="w-full md:w-1/2 px-4 sm:px-6 md:px-8 lg:px-12 py-6 sm:py-8 md:py-10 lg:py-12 space-y-6 md:space-y-8 overflow-y-auto flex-1">
+            <div className="w-full md:w-1/2 px-4 pt-8 pb-6 sm:px-6 sm:pt-8 sm:pb-8 md:px-8 md:pt-10 md:pb-10 lg:px-12 lg:pt-12 lg:pb-12 space-y-6 md:space-y-8 overflow-y-auto flex-1">
               <div className="space-y-2 md:space-y-3 border-b border-white/5 pb-4 md:pb-6">
                 <h2 className="font-mono text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-[0.15em] md:tracking-[0.2em] text-white leading-tight">
                   {print.title.toUpperCase()}
                 </h2>
-                <p className="text-white/50 font-mono text-[10px] sm:text-xs md:text-sm tracking-[0.25em] md:tracking-[0.3em] uppercase">
+                <p className="text-white/50 font-mono text-[10px] sm:text-xs md:text-sm leading-relaxed md:leading-loose tracking-wide max-w-3xl">
                   {print.category}
                 </p>
               </div>

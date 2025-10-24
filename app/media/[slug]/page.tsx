@@ -3,14 +3,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BookOpen, ExternalLink } from "lucide-react";
-import {
-  getMediaBySlug,
-  getAllMediaPosts,
-  urlForImage,
-  type MediaPost,
-} from "@/lib/sanity";
+
+// ✅ server-only queries
+import { getMediaBySlug, getAllMediaPosts } from "@/lib/sanity.server";
+// ✅ public image builder + type
+import { urlForImage, type MediaPost } from "@/lib/sanity-public";
 
 type Props = { params: { slug: string } };
+
+export const revalidate = 60;
 
 export default async function MediaPostPage({ params }: Props) {
   const post = await getMediaBySlug(params.slug);
@@ -169,5 +170,3 @@ export async function generateStaticParams() {
     .filter((p) => p?.slug?.current)
     .map((p) => ({ slug: p.slug.current }));
 }
-
-export const revalidate = 60;

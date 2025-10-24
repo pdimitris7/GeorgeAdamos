@@ -1,53 +1,45 @@
-"use client";
-
-import { useEffect, useState } from "react";
+// components/portfolio-section.tsx
 import Image from "next/image";
 import Link from "next/link";
-import {
-  getHomePortfolioProjects,
-  urlForImage,
-  type PortfolioProject,
-} from "@/lib/sanity";
+import { unstable_cache } from "next/cache";
+import { getHomePortfolioProjects } from "@/lib/sanity";
+import { urlForImage, type PortfolioProject } from "@/lib/sanity-public";
 
-export default function PortfolioSection() {
-  const [items, setItems] = useState<PortfolioProject[]>([]);
-  const [loading, setLoading] = useState(true);
+/**
+ * Cache-άρουμε στον server τα featured projects για 60"
+ * ώστε να είναι ελαφρύ και σταθερό στο Heroku.
+ * (Το @sanity/client τρέχει μόνο στον server.)
+ */
+const getFeatured = unstable_cache(
+  async (): Promise<PortfolioProject[]> => {
+    const data = await getHomePortfolioProjects();
+    return (Array.isArray(data) ? data : []).slice(0, 4);
+  },
+  ["home-portfolio-featured"],
+  { revalidate: 60 }
+);
 
-  useEffect(() => {
-    let alive = true;
-    (async () => {
-      try {
-        // Μόνο όσα έχουν "Show on Homepage" (isFeatured true)
-        const data = await getHomePortfolioProjects();
-        if (alive) setItems(data.slice(0, 4)); // κρατάμε max 4 για το 4×2 layout
-      } catch (e) {
-        console.error("Failed to load homepage portfolio:", e);
-        if (alive) setItems([]);
-      } finally {
-        if (alive) setLoading(false);
-      }
-    })();
-    return () => {
-      alive = false;
-    };
-  }, []);
-
-  if (loading) {
-    return (
-      <section id="portfolio" className="py-16 md:py-24 bg-black text-white">
-        <div className="container-custom">
-          <div className="text-center max-w-4xl mx-auto mb-16">
-            <h2 className="font-mono text-3xl md:text-4xl font-normal mb-6 opacity-70">
-              [ ] Portfolio
-            </h2>
-            <p className="font-mono text-base leading-relaxed mb-8">
-              Loading featured projects...
-            </p>
-          </div>
-        </div>
-      </section>
-    );
+// Helper: αν το urlForImage επιστρέφει builder (recommended), κάνουμε chain,
+// αν επιστρέφει ήδη string, το περνάμε όπως είναι. Αν αποτύχει: fallback SVG.
+function srcFrom(img: any, w = 1600, h = 1200): string {
+  const anyVal: any = urlForImage(img);
+  if (!anyVal) return "/placeholder.svg";
+  // περίπτωση 1: builder με .width/.height/.fit/.url
+  if (typeof anyVal?.width === "function") {
+    let chain = anyVal.width(w).height(h);
+    if (typeof chain.fit === "function") chain = chain.fit("max");
+    if (typeof chain.url === "function") return chain.url();
   }
+  // περίπτωση 2: ήδη URL string
+  if (typeof anyVal === "string") return anyVal;
+  // περίπτωση 3: object με .url() μόνο
+  if (typeof anyVal?.url === "function") return anyVal.url();
+  return "/placeholder.svg";
+}
+
+export default async function PortfolioSection() {
+  // Server-side fetch (χωρίς useEffect/useState)
+  const items = await getFeatured();
 
   if (!items.length) {
     return (
@@ -66,10 +58,6 @@ export default function PortfolioSection() {
     );
   }
 
-  // Helper: ασφαλές URL για Image
-  const src = (img: any, w = 1600, h = 1200) =>
-    urlForImage(img)?.width(w).height(h).fit("max").url() || "/placeholder.svg";
-
   return (
     <section id="portfolio" className="py-16 md:py-24 bg-black text-white">
       <div className="container-custom">
@@ -84,10 +72,7 @@ export default function PortfolioSection() {
         </div>
 
         <div className="max-w-6xl mx-auto">
-          {/* =========================
-              Desktop (≥md) — EXACT layout
-              grid-cols-4 / grid-rows-2 / h-[600px]
-             ========================= */}
+          {/* Desktop (≥md) — 4×2 grid / h-[600px] */}
           <div className="hidden md:grid grid-cols-4 grid-rows-2 gap-4 h-[600px]">
             {/* Large tile (2x2) */}
             {items[0] && (
@@ -99,11 +84,12 @@ export default function PortfolioSection() {
                 } group relative overflow-hidden`}
               >
                 <Image
-                  src={src(items[0].heroImage, 2000, 2000)}
+                  src={srcFrom(items[0].heroImage, 2000, 2000)}
                   alt={items[0].title}
                   fill
                   sizes="(min-width: 1024px) 50vw, 100vw"
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
                 <div className="absolute bottom-6 left-6 right-6">
@@ -131,7 +117,7 @@ export default function PortfolioSection() {
                 } group relative overflow-hidden`}
               >
                 <Image
-                  src={src(p.heroImage, 1200, 900)}
+                  src={srcFrom(p.heroImage, 1200, 900)}
                   alt={p.title}
                   fill
                   sizes="(min-width: 1024px) 25vw, 100vw"
@@ -153,12 +139,7 @@ export default function PortfolioSection() {
             ))}
           </div>
 
-          {/* =========================
-              Mobile & Small ( < md )
-              διατηρώ ίδια αισθητική αλλά responsive:
-              - xs: 1 στήλη (stack)
-              - sm: 2 στήλες
-             ========================= */}
+          {/* Mobile & small (< md) */}
           <div className="grid md:hidden grid-cols-1 sm:grid-cols-2 gap-4">
             {items.map((p) => (
               <Link
@@ -168,7 +149,7 @@ export default function PortfolioSection() {
                 className="group relative overflow-hidden rounded-lg aspect-[4/3]"
               >
                 <Image
-                  src={src(p.heroImage, 1200, 900)}
+                  src={srcFrom(p.heroImage, 1200, 900)}
                   alt={p.title}
                   fill
                   sizes="(max-width: 767px) 100vw, 50vw"

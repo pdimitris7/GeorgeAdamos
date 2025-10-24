@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { X, ExternalLink, Calendar, BookOpen } from "lucide-react";
-import { urlForImage, type MediaPost } from "@/lib/sanity";
+import { urlForImage, type MediaPost } from "@/lib/sanity-public";
 
 function hasImageAsset(img: any) {
   return Boolean(img?.asset?._ref || img?._ref);

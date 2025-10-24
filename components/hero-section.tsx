@@ -6,7 +6,7 @@ export default function HeroSection() {
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="/echoes site-7956 (1).jpg"
+          src="/echoes%20site-7956%20(1)%20(1).jpg"
           alt="Hero background"
           fill
           priority

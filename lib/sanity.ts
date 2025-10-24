@@ -1,43 +1,48 @@
 // lib/sanity.ts
+import "server-only";
 import { createClient } from "@sanity/client";
-import imageUrlBuilder from "@sanity/image-url";
 import groq from "groq";
 
 /* =========================================
-   SANITY CLIENT
+   SANITY CLIENT (SERVER‑ONLY)
    ========================================= */
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "fyr1ddav";
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
-const apiVersion = (
-  process.env.NEXT_PUBLIC_SANITY_API_VERSION ||
+// ⚠️ Ιδανικά πέρασέ τα από env (Heroku Config Vars).
+// Κρατάω fallback στα δικά σου ids για να μη «σκάσει» σε dev.
+const projectId =
+  process.env.SANITY_PROJECT_ID ||
+  process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ||
+  "fyr1ddav";
+const dataset =
+  process.env.SANITY_DATASET ||
+  process.env.NEXT_PUBLIC_SANITY_DATASET ||
+  "production";
+
+// Δέχεται μορφή "2024-05-01" ή "v2024-05-01"
+const apiVersionRaw =
   process.env.SANITY_API_VERSION ||
-  "2023-05-03"
-).replace(/^v/i, "");
+  process.env.NEXT_PUBLIC_SANITY_API_VERSION ||
+  "2024-05-01";
+const apiVersion = apiVersionRaw.replace(/^v/i, "");
+
 const token = process.env.SANITY_READ_TOKEN;
+// Private dataset ⇒ CDN δεν δουλεύει. Με token -> useCdn: false
+const useCdn = token ? false : true;
+
+if (!projectId || !dataset) {
+  throw new Error(
+    "Missing SANITY projectId/dataset. Set SANITY_PROJECT_ID & SANITY_DATASET (ή τα NEXT_PUBLIC_ αντίστοιχα)."
+  );
+}
 
 export const client = createClient({
   projectId,
   dataset,
   apiVersion,
   token: token || undefined,
-  useCdn: false,
+  useCdn,
+  // Αν θες preview drafts κάπου αλλού, βάλε perspective: "previewDrafts" σε ΕΚΕΙΝΑ τα fetch.
+  // Εδώ θα ζητάμε published σε κάθε query.
 });
-
-/* =========================================
-   IMAGE URL BUILDER
-   ========================================= */
-const builder = imageUrlBuilder({ projectId, dataset });
-
-export function urlForImage(src?: any) {
-  if (!src) return undefined;
-  const ref = src?.asset?._ref || src?._ref || src?.asset?._id || null;
-  if (!ref) return undefined;
-  try {
-    return builder.image(ref);
-  } catch {
-    return undefined;
-  }
-}
 
 /* =========================================
    TYPES
@@ -85,14 +90,31 @@ export type Print = {
 };
 
 /* =========================================
+   GROQ HELPERS
+   ========================================= */
+const PORTFOLIO_FIELDS = `
+  _id, title, slug, category, heroImage, description, gridClass, order, isFeatured,
+  "gallery": gallery[defined(asset)]
+`;
+const MEDIA_FIELDS = `
+  _id, title, slug, publication, category, excerpt,
+  featuredImage, externalLink, showOnHome, order, publishedDate,
+  "gallery": gallery[defined(asset)]
+`;
+const PRINT_FIELDS = `
+  _id, title, slug, category, image,
+  availableSizes[]{size, price},
+  description, isAvailable, order
+`;
+
+/* =========================================
    QUERIES – PORTFOLIO
    ========================================= */
 export async function getHomePortfolioProjects(): Promise<PortfolioProject[]> {
   const QUERY = groq`
     *[_type == "portfolio" && coalesce(isFeatured, false) == true && !(_id in path("drafts.**"))]
       | order(coalesce(order, 999) asc, _createdAt desc) {
-        _id, title, slug, category, heroImage, description, gridClass, order, isFeatured,
-        "gallery": gallery[defined(asset)]
+        ${PORTFOLIO_FIELDS}
       }
   `;
   return client.fetch(QUERY, {}, { perspective: "published" });
@@ -102,8 +124,7 @@ export async function getAllPortfolioProjects(): Promise<PortfolioProject[]> {
   const QUERY = groq`
     *[_type == "portfolio" && !(_id in path("drafts.**"))]
       | order(coalesce(order, 999) asc, _createdAt desc) {
-        _id, title, slug, category, heroImage, description, gridClass, order, isFeatured,
-        "gallery": gallery[defined(asset)]
+        ${PORTFOLIO_FIELDS}
       }
   `;
   return client.fetch(QUERY, {}, { perspective: "published" });
@@ -114,8 +135,7 @@ export async function getPortfolioBySlug(
 ): Promise<PortfolioProject | null> {
   const QUERY = groq`
     *[_type == "portfolio" && slug.current == $slug && !(_id in path("drafts.**"))][0]{
-      _id, title, slug, category, heroImage, description, gridClass, order, isFeatured,
-      "gallery": gallery[defined(asset)]
+      ${PORTFOLIO_FIELDS}
     }
   `;
   return client.fetch(QUERY, { slug }, { perspective: "published" });
@@ -128,9 +148,7 @@ export async function getHomeMediaPosts(): Promise<MediaPost[]> {
   const QUERY = groq`
     *[_type == "mediaPost" && coalesce(showOnHome, false) == true && !(_id in path("drafts.**"))]
       | order(coalesce(order, 999) asc, _createdAt desc) {
-        _id, title, slug, publication, category, excerpt,
-        featuredImage, externalLink, showOnHome, order, publishedDate,
-        "gallery": gallery[defined(asset)]
+        ${MEDIA_FIELDS}
       }
   `;
   return client.fetch(QUERY, {}, { perspective: "published" });
@@ -140,9 +158,7 @@ export async function getAllMediaPosts(): Promise<MediaPost[]> {
   const QUERY = groq`
     *[_type == "mediaPost" && !(_id in path("drafts.**"))]
       | order(coalesce(order, 999) asc, _createdAt desc) {
-        _id, title, slug, publication, category, excerpt,
-        featuredImage, externalLink, showOnHome, order, publishedDate,
-        "gallery": gallery[defined(asset)]
+        ${MEDIA_FIELDS}
       }
   `;
   return client.fetch(QUERY, {}, { perspective: "published" });
@@ -151,9 +167,7 @@ export async function getAllMediaPosts(): Promise<MediaPost[]> {
 export async function getMediaBySlug(slug: string): Promise<MediaPost | null> {
   const QUERY = groq`
     *[_type == "mediaPost" && slug.current == $slug && !(_id in path("drafts.**"))][0]{
-      _id, title, slug, publication, category, excerpt,
-      featuredImage, externalLink, showOnHome, order, publishedDate,
-      "gallery": gallery[defined(asset)]
+      ${MEDIA_FIELDS}
     }
   `;
   return client.fetch(QUERY, { slug }, { perspective: "published" });
@@ -166,9 +180,7 @@ export async function getAllPrints(): Promise<Print[]> {
   const QUERY = groq`
     *[_type == "print" && coalesce(isAvailable, true) == true && !(_id in path("drafts.**"))]
       | order(coalesce(order, 999) asc, _createdAt desc) {
-        _id, title, slug, category, image,
-        availableSizes[]{size, price},
-        description, isAvailable, order
+        ${PRINT_FIELDS}
       }
   `;
   return client.fetch(QUERY, {}, { perspective: "published" });
@@ -177,18 +189,19 @@ export async function getAllPrints(): Promise<Print[]> {
 export async function getPrintBySlug(slug: string): Promise<Print | null> {
   const QUERY = groq`
     *[_type == "print" && slug.current == $slug && !(_id in path("drafts.**"))][0]{
-      _id, title, slug, category, image,
-      availableSizes[]{size, price},
-      description, isAvailable, order
+      ${PRINT_FIELDS}
     }
   `;
   return client.fetch(QUERY, { slug }, { perspective: "published" });
 }
 
+/* =========================================
+   Exports
+   ========================================= */
 export { groq };
 
 /* =========================================
-   ALIASES για να δουλέψουν οι υπάρχουσες σελίδες
+   Backwards‑compat aliases (όπως είχες)
    ========================================= */
 export { getPortfolioBySlug as getPortfolioProject };
 export { getHomePortfolioProjects as getFeaturedPortfolioProjects };

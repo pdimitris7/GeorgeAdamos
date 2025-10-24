@@ -8,7 +8,7 @@ import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import Navigation from "@/components/navigation";
 import Footer from "@/components/footer";
 import PrintsCartDrawer from "@/components/prints-cart-drawer";
-import { urlForImage, type Print } from "@/lib/sanity";
+import { urlForImage, type Print } from "@/lib/sanity-public";
 import { openCart } from "@/lib/cart";
 
 export const dynamic = "force-dynamic";

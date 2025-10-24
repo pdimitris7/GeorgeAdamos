@@ -1,8 +1,8 @@
 // app/api/prints/all/route.ts
 import { NextResponse } from "next/server";
-import { getAllPrints } from "@/lib/sanity";
+import { getAllPrints } from "@/lib/sanity"; // server module
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export async function GET() {
   try {
@@ -10,7 +10,7 @@ export async function GET() {
     return NextResponse.json(data);
   } catch (err: any) {
     return NextResponse.json(
-      { error: err?.message ?? "Failed" },
+      { error: err?.message || "Failed" },
       { status: 500 }
     );
   }

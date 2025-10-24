@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ExternalLink, BookOpen } from "lucide-react";
-import { urlForImage, type MediaPost } from "@/lib/sanity";
+import { urlForImage, type MediaPost } from "@/lib/sanity-public";
 
 export default function MediaSection() {
   const [mediaPosts, setMediaPosts] = useState<MediaPost[]>([]);
