@@ -83,6 +83,8 @@ export default function PrintModal({
     print.availableSizes?.find((s) => s.size === selectedSize)?.price ?? 0;
 
   function addToCart() {
+    if (!print) return; // ✅ Προσθήκη guard για TypeScript
+
     if (!selectedSize || !selectedPrice) return;
 
     const id = `${print._id}@${selectedSize}`;
