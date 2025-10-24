@@ -166,12 +166,13 @@ export async function getAllMediaPosts(): Promise<MediaPost[]> {
 export async function getMediaBySlug(slug: string): Promise<MediaPost | null> {
   const QUERY = groq`
     *[_type == "mediaPost" && slug.current == $slug && !(_id in path("drafts.**"))][0]{
-      ${MEDIA_FIELDS}
+      _id, title, slug, publication, category, excerpt,
+      featuredImage, externalLink, showOnHome, order, publishedDate,
+      "gallery": gallery[defined(asset)]
     }
   `;
   return client.fetch(QUERY, { slug }, { perspective: "published" });
 }
-
 /* =========================================
    QUERIES – PRINTS
    ========================================= */
