@@ -8,9 +8,11 @@ import { useRouter } from "next/navigation";
 import { urlForImage, type Print } from "@/lib/sanity-public";
 import { addOrMerge, openCart, type CartItem } from "@/lib/cart";
 
+/* ------------ helpers ------------ */
 function imgUrl(raw: any, w?: number, h?: number) {
   if (!raw) return undefined as string | undefined;
   const anyVal = urlForImage(raw) as any;
+
   if (anyVal && typeof anyVal.width === "function") {
     let c = anyVal;
     if (typeof w === "number") c = c.width(w);
@@ -23,18 +25,32 @@ function imgUrl(raw: any, w?: number, h?: number) {
   return undefined;
 }
 
-type Props = { print: Print | null; onClose?: () => void };
+/* ------------ types ------------ */
+type Mode = "overlay" | "page" | "standalone";
 
-export default function PrintModal({ print, onClose }: Props) {
+type Props = {
+  print: Print | null;
+  onClose?: () => void;
+  mode?: Mode; // default: "overlay"
+};
+
+/* ------------ component ------------ */
+export default function PrintModal({
+  print,
+  onClose,
+  mode = "overlay",
+}: Props) {
   const router = useRouter();
+  const isOverlay = mode === "overlay";
+
   const close = useCallback(() => {
     if (onClose) onClose();
     else router.back();
   }, [onClose, router]);
 
-  // Lock scroll + ESC
+  // Lock scroll + ESC μόνο στο overlay
   useEffect(() => {
-    if (!print) return;
+    if (!print || !isOverlay) return;
     document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
     window.addEventListener("keydown", onKey);
@@ -42,7 +58,7 @@ export default function PrintModal({ print, onClose }: Props) {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", onKey);
     };
-  }, [print, close]);
+  }, [print, close, isOverlay]);
 
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [qty, setQty] = useState<number>(1);
@@ -88,39 +104,51 @@ export default function PrintModal({ print, onClose }: Props) {
   }
 
   function goCheckout() {
-    // Θα ανοίξει το drawer στο route /prints (παραμένεις στο ίδιο route)
-    openCart();
-    // option: άφησε το modal ανοιχτό ή κλείστο
-    // close();
+    openCart(); // ανοίγει το drawer στο /prints
   }
 
   return (
-    <div className="fixed inset-0 z-50">
+    <div className={isOverlay ? "fixed inset-0 z-50" : "relative z-10"}>
+      {/* Overlay background & close button μόνο στο overlay */}
+      {isOverlay && (
+        <>
+          <div
+            className="absolute inset-0 bg-gradient-to-b from-black via-black to-black/95 backdrop-blur-sm"
+            onClick={close}
+            aria-hidden="true"
+          />
+          <button
+            onClick={close}
+            className="fixed top-6 right-6 text-white hover:text-gray-300 transition-colors z-[60]"
+            aria-label="Close"
+          >
+            <X size={32} strokeWidth={1.5} />
+          </button>
+        </>
+      )}
+
+      {/* Wrapper */}
       <div
-        className="absolute inset-0 bg-gradient-to-b from-black via-black to-black/95 backdrop-blur-sm"
-        onClick={close}
-        aria-hidden="true"
-      />
-      <button
-        onClick={close}
-        className="fixed top-6 right-6 text-white hover:text-gray-300 transition-colors z-[60]"
-        aria-label="Close"
-      >
-        <X size={32} strokeWidth={1.5} />
-      </button>
-      ;
-      <div
-        className="fixed inset-0 flex items-start sm:items-center justify-center overflow-y-auto overscroll-contain"
-        onClick={close}
+        className={
+          isOverlay
+            ? "fixed inset-0 flex items-start sm:items-center justify-center overflow-y-auto overscroll-contain"
+            : "w-full"
+        }
+        onClick={isOverlay ? close : undefined}
       >
         <div
           role="dialog"
-          aria-modal="true"
-          className="relative w-full max-w-6xl mt-8 sm:mt-4 md:mt-8 mb-0 sm:mb-4 md:mb-8 bg-black border-0 sm:border border-white/10 shadow-2xl min-h-[calc(100vh-2rem)] sm:min-h-0 sm:max-h-[90vh]"
-          onClick={(e) => e.stopPropagation()}
-          style={{ paddingTop: "env(safe-area-inset-top)" }}
+          aria-modal={isOverlay ? "true" : undefined}
+          className={
+            isOverlay
+              ? "relative w-full max-w-6xl mt-8 sm:mt-4 md:mt-8 mb-0 sm:mb-4 md:mb-8 bg-black border-0 sm:border border-white/10 shadow-2xl min-h-[calc(100vh-2rem)] sm:min-h-0 sm:max-h-[90vh]"
+              : "relative w-full max-w-6xl mx-auto bg-black border border-white/10 shadow-2xl"
+          }
+          onClick={isOverlay ? (e) => e.stopPropagation() : undefined}
+          style={isOverlay ? { paddingTop: "env(safe-area-inset-top)" } : {}}
         >
           <div className="flex flex-col md:flex-row-reverse min-h-screen sm:min-h-0 sm:max-h-[90vh]">
+            {/* Image side */}
             <div className="relative w-full md:w-1/2 h-[50vh] sm:h-[60vh] md:h-auto md:min-h-[90vh] overflow-hidden border-b md:border-b-0 md:border-l border-white/10 flex-shrink-0 pt-4 sm:pt-0">
               <Image
                 src={heroUrl || "/placeholder.svg"}
@@ -132,6 +160,7 @@ export default function PrintModal({ print, onClose }: Props) {
               />
             </div>
 
+            {/* Content side */}
             <div className="w-full md:w-1/2 px-4 pt-8 pb-6 sm:px-6 sm:pt-8 sm:pb-8 md:px-8 md:pt-10 md:pb-10 lg:px-12 lg:pt-12 lg:pb-12 space-y-6 md:space-y-8 overflow-y-auto flex-1">
               <div className="space-y-2 md:space-y-3 border-b border-white/5 pb-4 md:pb-6">
                 <h2 className="font-mono text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-[0.15em] md:tracking-[0.2em] text-white leading-tight">
@@ -159,26 +188,19 @@ export default function PrintModal({ print, onClose }: Props) {
                         {print.availableSizes.map((opt) => (
                           <label
                             key={opt.size}
-                            className={`
-                              flex items-center justify-between p-3 sm:p-4 md:p-5 cursor-pointer 
-                              border transition-all duration-300 group
-                              ${
-                                selectedSize === opt.size
-                                  ? "border-white bg-white/5"
-                                  : "border-white/20 hover:border-white/40 hover:bg-white/[0.02]"
-                              }
-                            `}
+                            className={`flex items-center justify-between p-3 sm:p-4 md:p-5 cursor-pointer border transition-all duration-300 group ${
+                              selectedSize === opt.size
+                                ? "border-white bg-white/5"
+                                : "border-white/20 hover:border-white/40 hover:bg-white/[0.02]"
+                            }`}
                           >
                             <div className="flex items-center gap-3 md:gap-4">
                               <div
-                                className={`
-                                w-4 h-4 md:w-5 md:h-5 border-2 rounded-full flex items-center justify-center transition-all
-                                ${
+                                className={`w-4 h-4 md:w-5 md:h-5 border-2 rounded-full flex items-center justify-center transition-all ${
                                   selectedSize === opt.size
                                     ? "border-white"
                                     : "border-white/30 group-hover:border-white/50"
-                                }
-                              `}
+                                }`}
                               >
                                 {selectedSize === opt.size && (
                                   <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-white rounded-full" />
@@ -226,13 +248,7 @@ export default function PrintModal({ print, onClose }: Props) {
                     <button
                       onClick={addToCart}
                       disabled={!selectedSize || !selectedPrice}
-                      className="
-                        w-full px-6 sm:px-8 py-3 sm:py-3.5 font-mono text-xs sm:text-sm tracking-[0.15em] sm:tracking-[0.2em] uppercase
-                        border-2 border-white text-white
-                        hover:bg-white hover:text-black
-                        transition-all duration-300
-                        disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-white
-                      "
+                      className="w-full px-6 sm:px-8 py-3 sm:py-3.5 font-mono text-xs sm:text-sm tracking-[0.15em] sm:tracking-[0.2em] uppercase border-2 border-white text-white hover:bg-white hover:text-black transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-white"
                     >
                       Add to Cart
                     </button>
@@ -266,19 +282,13 @@ export default function PrintModal({ print, onClose }: Props) {
                   <div className="flex flex-col gap-2 sm:gap-3 pt-3 md:pt-4 border-t border-white/10">
                     <button
                       onClick={goCheckout}
-                      className="
-                        w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-white text-black font-mono text-xs sm:text-sm tracking-[0.15em] sm:tracking-[0.2em] uppercase
-                        hover:bg-white/90 transition-colors
-                      "
+                      className="w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-white text-black font-mono text-xs sm:text-sm tracking-[0.15em] sm:tracking-[0.2em] uppercase hover:bg-white/90 transition-colors"
                     >
                       Go to Checkout
                     </button>
                     <button
                       onClick={close}
-                      className="
-                        w-full px-4 sm:px-6 py-2.5 sm:py-3 border border-white text-white font-mono text-xs sm:text-sm tracking-[0.15em] sm:tracking-[0.2em] uppercase
-                        hover:bg-white/5 transition-colors
-                      "
+                      className="w-full px-4 sm:px-6 py-2.5 sm:py-3 border border-white text-white font-mono text-xs sm:text-sm tracking-[0.15em] sm:tracking-[0.2em] uppercase hover:bg-white/5 transition-colors"
                     >
                       Continue Shopping
                     </button>
@@ -286,6 +296,7 @@ export default function PrintModal({ print, onClose }: Props) {
                 </div>
               )}
             </div>
+            {/* /Content */}
           </div>
         </div>
       </div>
