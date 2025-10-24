@@ -1,7 +1,7 @@
 // app/prints/[slug]/page.tsx
 import { notFound } from "next/navigation";
 import PrintModal from "@/components/print-modal";
-import { getPrintBySlug } from "@/lib/sanity";
+import { getPrintBySlug } from "@/lib/sanity.base";
 
 export const revalidate = 60;
 

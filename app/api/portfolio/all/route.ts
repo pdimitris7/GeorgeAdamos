@@ -1,6 +1,6 @@
 // app/api/portfolio/all/route.ts
 import { NextResponse } from "next/server";
-import { getAllPortfolioProjects } from "@/lib/sanity";
+import { getAllPortfolioProjects } from "@/lib/sanity.base";
 
 export const dynamic = "force-dynamic";
 

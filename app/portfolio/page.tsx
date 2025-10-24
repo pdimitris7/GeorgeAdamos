@@ -9,7 +9,7 @@ import Footer from "@/components/footer";
 import { ArrowLeft } from "lucide-react";
 
 // ⬇️ ΧΡΗΣΙΜΟΠΟΙΗΣΕ ΤΟ lib/sanity (builder), ΟΧΙ sanity-public
-import { urlForImage, type PortfolioProject } from "@/lib/sanity";
+import { urlForImage, type PortfolioProject } from "@/lib/sanity.base";
 
 function toTitleCase(s: string) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;

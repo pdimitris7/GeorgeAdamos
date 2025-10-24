@@ -1,6 +1,6 @@
 // app/api/media/all/route.ts
 import { NextResponse } from "next/server";
-import { getAllMediaPosts } from "@/lib/sanity";
+import { getAllMediaPosts } from "@/lib/sanity.base";
 
 export const dynamic = "force-dynamic";
 

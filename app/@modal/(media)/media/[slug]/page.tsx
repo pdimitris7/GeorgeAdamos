@@ -1,6 +1,6 @@
 // app/media/@modal/(.)[slug]/page.tsx
 import { notFound } from "next/navigation";
-import { getMediaBySlug } from "@/lib/sanity";
+import { getMediaBySlug } from "@/lib/sanity.base";
 import MediaModal from "@/components/media-modal";
 
 type Props = { params: { slug: string } };

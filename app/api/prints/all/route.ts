@@ -1,6 +1,6 @@
 // app/api/prints/all/route.ts
 import { NextResponse } from "next/server";
-import { getAllPrints } from "@/lib/sanity"; // server module
+import { getAllPrints } from "@/lib/sanity.base"; // server module
 
 export const revalidate = 60;
 

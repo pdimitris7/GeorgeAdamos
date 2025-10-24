@@ -1,6 +1,6 @@
-// app/portfolio/[slug]/page.tsx
+// app/@modal/(..)portofolio/[slug]/page.tsx
 import { notFound } from "next/navigation";
-import { getPortfolioBySlug } from "@/lib/sanity";
+import { getPortfolioBySlug } from "@/lib/sanity.base";
 import PortfolioModal from "@/components/portfolio-modal";
 
 export default async function PortfolioProjectPage({

@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ExternalLink, BookOpen, ArrowLeft } from "lucide-react";
-import { urlForImage, type MediaPost } from "@/lib/sanity";
+import { urlForImage, type MediaPost } from "@/lib/sanity.base";
 import Navigation from "@/components/navigation";
 import Footer from "@/components/footer";
 

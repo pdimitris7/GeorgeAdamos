@@ -1,22 +1,22 @@
-import { notFound } from "next/navigation"
-import Image from "next/image"
-import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
-import Navigation from "@/components/navigation"
-import Footer from "@/components/footer"
-import { getPortfolioProject, urlForImage } from "@/lib/sanity"
+import { notFound } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
+import Navigation from "@/components/navigation";
+import Footer from "@/components/footer";
+import { getPortfolioProject, urlForImage } from "@/lib/sanity.base";
 
 interface ProjectPageProps {
   params: {
-    slug: string
-  }
+    slug: string;
+  };
 }
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
-  const project = await getPortfolioProject(params.slug)
+  const project = await getPortfolioProject(params.slug);
 
   if (!project) {
-    notFound()
+    notFound();
   }
 
   return (
@@ -60,7 +60,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           {/* Description */}
           {project.description && (
             <div className="max-w-4xl mx-auto mb-16">
-              <p className="text-white font-mono text-lg leading-relaxed text-center">{project.description}</p>
+              <p className="text-white font-mono text-lg leading-relaxed text-center">
+                {project.description}
+              </p>
             </div>
           )}
 
@@ -75,8 +77,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                   "aspect-[5/4]", // slightly portrait
                   "aspect-[16/9]", // wide
                   "aspect-[2/3]", // tall portrait
-                ]
-                const aspectRatio = aspectRatios[index % aspectRatios.length]
+                ];
+                const aspectRatio = aspectRatios[index % aspectRatios.length];
 
                 return (
                   <div
@@ -90,7 +92,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                       className="object-cover"
                     />
                   </div>
-                )
+                );
               })}
             </div>
           )}
@@ -99,5 +101,5 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
       <Footer />
     </>
-  )
+  );
 }

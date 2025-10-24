@@ -1,6 +1,6 @@
 // app/api/media/home/route.ts
 import { NextResponse } from "next/server";
-import { getHomeMediaPosts } from "@/lib/sanity";
+import { getHomeMediaPosts } from "@/lib/sanity.base";
 
 export const dynamic = "force-dynamic";
 

@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { unstable_cache } from "next/cache";
-import { getHomePortfolioProjects } from "@/lib/sanity";
+import { getHomePortfolioProjects } from "@/lib/sanity.base";
 import { urlForImage, type PortfolioProject } from "@/lib/sanity-public";
 
 /**

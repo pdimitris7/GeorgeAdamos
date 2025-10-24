@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getPrintBySlug } from "@/lib/sanity";
+import { getPrintBySlug } from "@/lib/sanity.base";
 import PrintModal from "@/components/print-modal";
 
 export const dynamic = "force-dynamic";
