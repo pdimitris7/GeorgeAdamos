@@ -4,8 +4,10 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import Navigation from "@/components/navigation";
 import Footer from "@/components/footer";
-import { getPortfolioProject, urlForImage } from "@/lib/sanity.base";
-
+// ✅ server-only queries
+import { getPortfolioProject } from "@/lib/sanity.server";
+// ✅ public image builder (+ types αν θέλεις)
+import { urlForImage, type PortfolioProject } from "@/lib/sanity-public";
 interface ProjectPageProps {
   params: {
     slug: string;

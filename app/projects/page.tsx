@@ -2,8 +2,10 @@ import Navigation from "@/components/navigation";
 import Footer from "@/components/footer";
 import Image from "next/image";
 import Link from "next/link";
-import { getFeaturedPortfolioProjects, urlForImage } from "@/lib/sanity.base";
-
+// ✅ Server-only data (Sanity queries)
+import { getFeaturedPortfolioProjects } from "@/lib/sanity.server";
+// ✅ Public image builder + type
+import { urlForImage, type PortfolioProject } from "@/lib/sanity-public";
 export default async function ProjectsPage() {
   const projects = await getFeaturedPortfolioProjects();
 

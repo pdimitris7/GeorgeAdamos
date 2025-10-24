@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { BookOpen, ExternalLink } from "lucide-react";
 
 // ✅ server-only queries
-import { getMediaBySlug, getAllMediaPosts } from "@/lib/sanity.server";
+import { getPortfolioBySlug } from "@/lib/sanity.server";
 // ✅ public image builder + type
 import { urlForImage, type MediaPost } from "@/lib/sanity-public";
 
