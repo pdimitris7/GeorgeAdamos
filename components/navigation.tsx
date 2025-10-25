@@ -3,81 +3,41 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, X, ShoppingCart } from "lucide-react";
-import { useRouter, usePathname } from "next/navigation";
-
-const CART_KEY = "prints-cart-v1";
+import { Menu, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function Navigation() {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
-
   const router = useRouter();
-  const pathname = usePathname();
 
-  // header hide/show on scroll
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
+
       if (currentScrollY < lastScrollY || currentScrollY < 50) {
         setIsVisible(true);
       } else {
         setIsVisible(false);
       }
+
       setLastScrollY(currentScrollY);
     };
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  // mobile menu toggle
-  const toggleMenu = () => setIsMenuOpen((v) => !v);
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
-  // nav push helper
   const handleNavigation = (href: string) => {
     setIsMenuOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
     router.push(href);
   };
-
-  // cart count
-  function refreshCartCount() {
-    try {
-      const raw = localStorage.getItem(CART_KEY);
-      const items = raw ? JSON.parse(raw) : [];
-      const count = items.reduce((s: number, it: any) => s + (it.qty || 0), 0);
-      setCartCount(count);
-    } catch {
-      setCartCount(0);
-    }
-  }
-  useEffect(() => {
-    refreshCartCount();
-    const onStorage = () => refreshCartCount();
-    const onUpdated = () => refreshCartCount();
-    window.addEventListener("storage", onStorage);
-    window.addEventListener("cart:updated", onUpdated as any);
-    return () => {
-      window.removeEventListener("storage", onStorage);
-      window.removeEventListener("cart:updated", onUpdated as any);
-    };
-  }, []);
-
-  // open checkout
-  function openCheckout() {
-    if (pathname !== "/prints") {
-      router.push("/prints");
-      setTimeout(() => {
-        window.dispatchEvent(new CustomEvent("cart:open"));
-      }, 50);
-    } else {
-      window.dispatchEvent(new CustomEvent("cart:open"));
-    }
-  }
-
-  const showCartButton = pathname === "/prints";
 
   return (
     <>
@@ -103,42 +63,25 @@ export default function Navigation() {
             </div>
           </Link>
 
-          <div className="flex items-center gap-2">
-            {/* Cart μόνο στη σελίδα /prints */}
-            {showCartButton && (
-              <button
-                onClick={openCheckout}
-                className="relative z-50 p-2 text-beige-light hover:text-brown-light transition-colors flex items-center justify-center"
-                aria-label="Open cart"
-              >
-                <ShoppingCart size={22} />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 text-[10px] leading-none bg-brown text-white rounded-full px-1.5 py-0.5">
-                    {cartCount}
-                  </span>
-                )}
-              </button>
-            )}
-
-            {/* Menu */}
-            <button
-              onClick={toggleMenu}
-              className="relative z-50 p-2 text-beige-light hover:text-brown-light transition-colors flex items-center justify-center"
-              aria-label="Toggle menu"
-            >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
+          <button
+            onClick={toggleMenu}
+            className="relative z-50 p-2 text-beige-light hover:text-brown-light transition-colors flex items-center justify-center"
+            aria-label="Toggle menu"
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
       </header>
 
-      {/* Fullscreen menu */}
       <div
         className={`fixed inset-0 z-40 transition-all duration-300 ${
           isMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"
         }`}
       >
+        {/* Background overlay */}
         <div className="absolute inset-0 bg-black" onClick={toggleMenu} />
+
+        {/* Menu content */}
         <div className="relative z-50 flex items-center justify-center min-h-screen bg-black">
           <nav className="text-center">
             <ul className="space-y-8">

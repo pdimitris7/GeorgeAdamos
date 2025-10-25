@@ -92,18 +92,28 @@ export default function PortfolioModal({ project, onClose }: Props) {
       aria-modal="true"
       role="dialog"
     >
-      {/* X: fixed, χωρίς background, πάνω δεξιά */}
+      {/* X: fixed, ΠΙΟ ΨΗΛΑ στο mobile + notch safe-area */}
       <button
         onClick={close}
-        className="fixed top-6 right-6 text-white hover:text-gray-300 transition-colors z-[60]"
+        className="
+          fixed z-[60]
+          right-2 sm:right-4 md:right-6
+          top-[calc(env(safe-area-inset-top,0)+8px)] sm:top-[calc(env(safe-area-inset-top,0)+12px)] md:top-6
+          text-white hover:text-gray-300 transition-colors
+        "
         aria-label="Close"
       >
-        <X size={32} strokeWidth={1.5} />
+        <X className="h-8 w-8 sm:h-9 sm:w-9" strokeWidth={1.5} />
       </button>
 
-      {/* Container */}
+      {/* Container (ΜΙΚΡΟΤΕΡΑ side margins σε mobile => πιο πλατύ) */}
       <div
-        className="relative w-[85vw] max-w-6xl max-h-[90vh] bg-white text-black overflow-y-auto shadow-2xl"
+        className="
+          relative
+          w-[92vw] sm:w-[88vw] md:w-[85vw]
+          max-w-6xl max-h-[90vh]
+          bg-white text-black overflow-y-auto shadow-2xl
+        "
         onClick={(e) => e.stopPropagation()} // ΜΗΝ κλείσεις όταν κάνω click μέσα
       >
         {/* Hero */}
@@ -118,7 +128,7 @@ export default function PortfolioModal({ project, onClose }: Props) {
           />
           <div className="absolute inset-0 bg-black/40" />
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center max-w-4xl px-8">
+            <div className="text-center max-w-4xl px-6 sm:px-7 md:px-8">
               <h1 className="text-white font-mono text-4xl md:text-5xl font-bold mb-4 leading-tight tracking-wide">
                 {(project.title || "").toUpperCase()}
               </h1>
@@ -130,8 +140,8 @@ export default function PortfolioModal({ project, onClose }: Props) {
         </div>
 
         {/* Content */}
-        <div className="px-8 py-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+        <div className="px-4 sm:px-6 md:px-8 py-10 md:py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-10 md:mb-12">
             <div className="relative aspect-[3/2] bg-gray-100">
               <Image
                 src={firstDetail}
@@ -142,14 +152,14 @@ export default function PortfolioModal({ project, onClose }: Props) {
               />
             </div>
             <div className="flex flex-col justify-center">
-              <p className="text-black font-mono text-lg leading-relaxed font-light">
+              <p className="text-black font-mono text-base md:text-lg leading-relaxed font-light">
                 {project.description || "No description available."}
               </p>
             </div>
           </div>
 
           {gallery.length > 1 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 md:gap-4 mb-6">
               {gallery.slice(1).map((img: any, index: number) => {
                 const isVertical =
                   (index + 1) % 4 === 0 || (index + 1) % 5 === 0;
@@ -180,6 +190,16 @@ export default function PortfolioModal({ project, onClose }: Props) {
           )}
         </div>
       </div>
+
+      <style jsx global>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </div>
   );
 }
