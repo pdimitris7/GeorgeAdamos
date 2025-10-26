@@ -195,6 +195,26 @@ export async function getPrintBySlug(slug: string): Promise<Print | null> {
   return client.fetch(QUERY, { slug }, { perspective: "published" });
 }
 
+export async function getPortfolioHighlights(limit = 20, excludeSlug?: string) {
+  const q = groq`*[
+    _type in ["portfolioProject", "portfolio", "project"]
+    && defined(slug.current)
+    && slug.current != $excludeSlug
+  ] | order(coalesce(_updatedAt, _createdAt) desc)[0...$limit]{
+    _id,
+    title,
+    category,
+    "slug": slug.current,
+    // Εικόνα με ασφαλές coalesce (και fallback σε gallery[0])
+    "heroImage": coalesce(heroImage, coverImage, mainImage, image, select(defined(gallery[0]) => gallery[0], null))
+  }`;
+
+  return client.fetch(q, {
+    limit,
+    excludeSlug: excludeSlug ?? "",
+  });
+}
+
 /* =========================================
    Exports
    ========================================= */
