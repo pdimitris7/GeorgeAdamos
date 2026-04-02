@@ -36,7 +36,6 @@ export default function PrintsCartDrawer() {
   const [open, setOpen] = useState(false);
   const [stage, setStage] = useState<"cart" | "checkout">("cart");
   const [items, setItems] = useState<CartItem[]>([]);
-  const [shippingZone, setShippingZone] = useState<"gr" | "eu" | "world">("gr");
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; msg: string } | null>(
     null
@@ -111,12 +110,7 @@ export default function PrintsCartDrawer() {
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }
 
-  const shipping = useMemo(
-    () => (shippingZone === "gr" ? 5 : shippingZone === "eu" ? 15 : 25),
-    [shippingZone]
-  );
   const subtotal = useMemo(() => getSubtotal(items), [items]);
-  const total = subtotal + shipping;
 
   function handleQty(id: string, next: number) {
     updateQty(id, next);
@@ -152,7 +146,7 @@ export default function PrintsCartDrawer() {
         body: JSON.stringify({
           customer,
           items,
-          totals: { subtotal, shipping, total },
+          totals: { subtotal, shipping: 0, total: subtotal },
         }),
       });
       const json = await res.json();
@@ -265,31 +259,13 @@ export default function PrintsCartDrawer() {
                   </div>
                 ))}
 
-                <div className="flex justify-between text-sm font-mono pt-2">
-                  <span>Subtotal</span>
-                  <span>€{subtotal.toFixed(2)}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm font-mono">
-                  <label className="flex items-center gap-2">
-                    Shipping
-                    <select
-                      value={shippingZone}
-                      onChange={(e) =>
-                        setShippingZone(e.target.value as "gr" | "eu" | "world")
-                      }
-                      className="border px-2 py-1 text-sm"
-                    >
-                      <option value="gr">Greece (€5)</option>
-                      <option value="eu">EU (€15)</option>
-                      <option value="world">Rest of World (€25)</option>
-                    </select>
-                  </label>
-                  <span>€{shipping.toFixed(2)}</span>
-                </div>
                 <div className="flex justify-between text-base font-mono border-t pt-2">
                   <span>Total</span>
-                  <span>€{total.toFixed(2)}</span>
+                  <span>€{subtotal.toFixed(2)}</span>
                 </div>
+                <p className="text-xs font-mono text-gray-500 leading-relaxed">
+                  Shipping costs are not included. We will contact you after your order to confirm shipping details and cost.
+                </p>
                 <button
                   className="mt-2 font-mono text-xs text-gray-600 underline"
                   onClick={() => {

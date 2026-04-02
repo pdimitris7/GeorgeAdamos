@@ -1,9 +1,9 @@
-import Image from "next/image"
-import Link from "next/link"
-import { Instagram, Facebook, Mail } from "lucide-react"
+import Image from "next/image";
+import Link from "next/link";
+import { Instagram, Mail } from "lucide-react";
 
 export default function Footer() {
-  const currentYear = new Date().getFullYear()
+  const currentYear = new Date().getFullYear();
 
   return (
     <footer className="bg-black text-beige-light py-12">
@@ -28,16 +28,7 @@ export default function Footer() {
               <Instagram size={24} />
             </Link>
             <Link
-              href="https://facebook.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-beige transition-colors"
-              aria-label="Facebook"
-            >
-              <Facebook size={24} />
-            </Link>
-            <Link
-              href="mailto:contact@georgeadamos.com"
+              href="mailto:jorje.adamos@gmail.com"
               className="hover:text-beige transition-colors"
               aria-label="Email"
             >
@@ -46,43 +37,85 @@ export default function Footer() {
           </div>
 
           <div className="text-center mb-8">
-            <p className="mb-2">contact@georgeadamos.com</p>
+            <p className="mb-2">jorje.adamos@gmail.com</p>
             <p>Athens, Greece</p>
           </div>
 
           <nav className="mb-8">
             <ul className="flex flex-wrap justify-center gap-x-8 gap-y-2">
               <li>
-                <Link href="#about" className="text-sm hover:text-beige transition-colors">
+                <Link
+                  href="#about"
+                  className="text-sm hover:text-beige transition-colors"
+                >
                   About
                 </Link>
               </li>
               <li>
-                <Link href="#portfolio" className="text-sm hover:text-beige transition-colors">
+                <Link
+                  href="#portfolio"
+                  className="text-sm hover:text-beige transition-colors"
+                >
                   Portfolio
                 </Link>
               </li>
               <li>
-                <Link href="#commercial" className="text-sm hover:text-beige transition-colors">
-                  Commercial
+                <Link
+                  href="/prints"
+                  className="text-sm hover:text-beige transition-colors"
+                >
+                  Prints
                 </Link>
               </li>
               <li>
-                <Link href="#media" className="text-sm hover:text-beige transition-colors">
+                <Link
+                  href="#media"
+                  className="text-sm hover:text-beige transition-colors"
+                >
                   Media
                 </Link>
               </li>
               <li>
-                <Link href="#contact" className="text-sm hover:text-beige transition-colors">
+                <Link
+                  href="/contact"
+                  className="text-sm hover:text-beige transition-colors"
+                >
                   Contact
                 </Link>
               </li>
             </ul>
           </nav>
 
-          {/* Removed copyright text completely */}
+          <div className="border-t border-white/10 pt-6 w-full flex justify-center">
+            <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+              <li>
+                <Link
+                  href="/privacy-policy"
+                  className="text-xs text-white/40 hover:text-beige transition-colors"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/cookies-policy"
+                  className="text-xs text-white/40 hover:text-beige transition-colors"
+                >
+                  Cookies Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/terms-of-use"
+                  className="text-xs text-white/40 hover:text-beige transition-colors"
+                >
+                  Terms of Use
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </footer>
-  )
+  );
 }

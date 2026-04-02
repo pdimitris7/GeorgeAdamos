@@ -4,13 +4,24 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+import { openCart, getCount, onCartUpdated } from "@/lib/cart";
 
 export default function Navigation() {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
   const router = useRouter();
+  const pathname = usePathname();
+  const onPrints = pathname?.startsWith("/prints");
+
+  useEffect(() => {
+    if (!onPrints) return;
+    setCartCount(getCount());
+    const off = onCartUpdated(() => setCartCount(getCount()));
+    return () => off?.();
+  }, [onPrints]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -63,13 +74,44 @@ export default function Navigation() {
             </div>
           </Link>
 
-          <button
-            onClick={toggleMenu}
-            className="relative z-50 p-2 text-beige-light hover:text-brown-light transition-colors flex items-center justify-center"
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div className="flex items-center gap-3">
+            {onPrints && (
+              <button
+                onClick={() => openCart("cart")}
+                className="relative z-50 p-2 text-beige-light hover:text-brown-light transition-colors flex items-center justify-center"
+                aria-label="Open cart"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <path d="M16 10a4 4 0 0 1-8 0" />
+                </svg>
+                {cartCount > 0 && (
+                  <span className="absolute top-1 right-1 flex items-center justify-center w-3.5 h-3.5 rounded-full bg-white text-black text-[9px] font-bold leading-none">
+                    {cartCount}
+                  </span>
+                )}
+              </button>
+            )}
+
+            <button
+              onClick={toggleMenu}
+              className="relative z-50 p-2 text-beige-light hover:text-brown-light transition-colors flex items-center justify-center"
+              aria-label="Toggle menu"
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -160,24 +202,22 @@ export default function Navigation() {
                   Prints
                 </button>
               </li>
+              <li>
+                <button
+                  onClick={() => handleNavigation("/contact")}
+                  className="group text-4xl md:text-5xl font-mono text-white hover:text-white transition-colors duration-300 tracking-wide flex items-center justify-center"
+                >
+                  <span className="mr-4 text-white/50 group-hover:text-white transition-colors">
+                    [
+                    <span className="opacity-0 group-hover:opacity-100 transition-opacity">
+                      x
+                    </span>
+                    ]
+                  </span>
+                  Contact
+                </button>
+              </li>
             </ul>
-
-            <div className="mt-12 flex justify-center space-x-8">
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white/70 hover:text-white transition-colors text-sm tracking-widest font-mono"
-              >
-                INSTAGRAM
-              </a>
-              <a
-                href="mailto:hello@georgeadamos.com"
-                className="text-white/70 hover:text-white transition-colors text-sm tracking-widest font-mono"
-              >
-                EMAIL
-              </a>
-            </div>
           </nav>
         </div>
       </div>

@@ -1,5 +1,1 @@
-// types/nodemailer.d.ts
-declare module "nodemailer" {
-  const nodemailer: any;
-  export default nodemailer;
-}
+// nodemailer has been replaced by resend — this file can be deleted

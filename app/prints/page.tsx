@@ -118,7 +118,7 @@ function PrintsPageInner() {
       {/* Drawer του cart */}
       <PrintsCartDrawer />
 
-      <div className="min-h-screen bg-black pt-20">
+<div className="min-h-screen bg-black pt-20">
         {/* Header */}
         <div className="bg-black border-b border-white/10 py-16 md:py-24">
           <div className="container-custom">

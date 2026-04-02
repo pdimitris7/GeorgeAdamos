@@ -1,6 +1,6 @@
 // app/api/checkout/route.ts
 import { NextResponse } from "next/server";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -36,9 +36,9 @@ type Payload = {
 /* ===================== HELPERS ===================== */
 const BRAND_NAME = process.env.BRAND_NAME || "George Adamos Prints";
 const BRAND_URL = process.env.BRAND_URL || "https://georgeadamos.com";
-const BRAND_LOGO = process.env.BRAND_LOGO || ""; // προαιρετικό URL logo
-const ORDER_TO = process.env.ORDER_TO || process.env.SMTP_USER || "";
-const ORDER_FROM = process.env.ORDER_FROM || process.env.SMTP_USER || "";
+const BRAND_LOGO = process.env.BRAND_LOGO || ""; // optional logo URL
+const ORDER_TO = process.env.ORDER_TO || "";
+const ORDER_FROM = process.env.ORDER_FROM || "orders@georgeadamos.com";
 const ORDER_BCC = process.env.ORDER_BCC || "";
 
 function euro(n: number) {
@@ -137,26 +137,19 @@ function buildItemsTableHTML(items: CartItem[]) {
   </table>`;
 }
 
-function buildTotalsHTML(subtotal: number, shipping: number, total: number) {
+function buildTotalsHTML(subtotal: number) {
   return `
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;background:#141414;border:1px solid #1f1f1f">
     <tr>
-      <td style="padding:12px 16px;color:#bbb;font:12px/1.6 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial">Υποσύνολο</td>
-      <td align="right" style="padding:12px 16px;color:#fff;font:600 14px/1.6 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial">${euro(
+      <td style="padding:12px 16px;color:#fff;font:700 14px/1.6 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial">Σύνολο (χωρίς μεταφορικά)</td>
+      <td align="right" style="padding:12px 16px;color:#fff;font:700 16px/1.6 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial">${euro(
         subtotal
       )}</td>
     </tr>
     <tr>
-      <td style="padding:12px 16px;color:#bbb;font:12px/1.6 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial">Μεταφορικά</td>
-      <td align="right" style="padding:12px 16px;color:#fff;font:600 14px/1.6 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial">${euro(
-        shipping
-      )}</td>
-    </tr>
-    <tr>
-      <td style="padding:12px 16px;color:#fff;font:700 14px/1.6 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;border-top:1px solid #222">Σύνολο</td>
-      <td align="right" style="padding:12px 16px;color:#fff;font:700 16px/1.6 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;border-top:1px solid #222">${euro(
-        total
-      )}</td>
+      <td colspan="2" style="padding:10px 16px;color:#9ad;font:italic 12px/1.8 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;border-top:1px solid #222">
+        Τα μεταφορικά δεν συμπεριλαμβάνονται. Θα επικοινωνήσουμε μαζί σας για να επιβεβαιώσουμε τα στοιχεία και το κόστος αποστολής.
+      </td>
     </tr>
   </table>`;
 }
@@ -196,8 +189,6 @@ function buildHTML(
   const { customer, items, totals } = payload;
   const subtotal =
     totals.subtotal ?? items.reduce((a, b) => a + b.price * b.qty, 0);
-  const shipping = totals.shipping ?? 0;
-  const total = totals.total ?? subtotal + shipping;
 
   const headerTitle = opts.forCustomer
     ? "Επιβεβαίωση Παραγγελίας"
@@ -259,11 +250,7 @@ function buildHTML(
 
     <tr><td style="padding:10px 24px">${buildItemsTableHTML(items)}</td></tr>
 
-    <tr><td style="padding:10px 24px">${buildTotalsHTML(
-      subtotal,
-      shipping,
-      total
-    )}</td></tr>
+    <tr><td style="padding:10px 24px">${buildTotalsHTML(subtotal)}</td></tr>
 
     <tr><td style="padding:18px 24px 24px">
       <div style="color:#888;font:12px/1.8 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial">
@@ -288,8 +275,6 @@ function buildText(
   const { customer, items, totals } = payload;
   const subtotal =
     totals.subtotal ?? items.reduce((a, b) => a + b.price * b.qty, 0);
-  const shipping = totals.shipping ?? 0;
-  const total = totals.total ?? subtotal + shipping;
   const intro = forCustomer
     ? `Γεια σου ${customer.fullName}, ευχαριστούμε για την παραγγελία σου.`
     : `Νέα παραγγελία από ${customer.fullName}.`;
@@ -315,9 +300,8 @@ function buildText(
 Items:
 ${lines}
 
-Υποσύνολο: ${euro(subtotal)}
-Μεταφορικά: ${euro(shipping)}
-Σύνολο: ${euro(total)}
+Σύνολο (χωρίς μεταφορικά): ${euro(subtotal)}
+* Τα μεταφορικά δεν συμπεριλαμβάνονται. Θα επικοινωνήσουμε για να επιβεβαιώσουμε το κόστος αποστολής.
 
 ${BRAND_NAME} — ${BRAND_URL}
 `;
@@ -328,7 +312,6 @@ export async function POST(req: Request) {
   try {
     const body = (await req.json()) as Payload;
 
-    // basic validation (κρατάμε όπως είχες, για να μην σπάσει το front)
     if (!body?.customer?.email || !body?.items?.length) {
       return NextResponse.json(
         { ok: false, error: "Invalid payload" },
@@ -336,79 +319,39 @@ export async function POST(req: Request) {
       );
     }
 
-    // Υπολογισμοί server-side
+    // Server-side calculations (shipping handled separately after contact)
     const subtotal = body.items.reduce((s, i) => s + i.qty * i.price, 0);
-    const shipping = Number(body.totals?.shipping ?? 0);
-    const total = subtotal + shipping;
 
     const orderId = makeOrderId();
 
-    // SMTP
-    const port = Number(process.env.SMTP_PORT || 465);
-    const secure =
-      (process.env.SMTP_SECURE ?? "").toString() === "true" || port === 465;
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port,
-      secure,
-      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-    });
+    // Resend client
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
-    // email προς ιδιοκτήτη
-    const ownerHTML = buildHTML(
-      {
-        customer: body.customer,
-        items: body.items,
-        totals: { subtotal, shipping, total },
-      },
-      { orderId, forCustomer: false }
-    );
-    const ownerText = buildText(
-      {
-        customer: body.customer,
-        items: body.items,
-        totals: { subtotal, shipping, total },
-      },
-      orderId,
-      false
-    );
+    const fullPayload: Required<Payload> = {
+      customer: body.customer,
+      items: body.items,
+      totals: { subtotal, shipping: 0, total: subtotal },
+    };
 
-    await transporter.sendMail({
-      from: ORDER_FROM || process.env.SMTP_USER || "no-reply@example.com",
-      to: ORDER_TO || process.env.SMTP_USER,
+    // Email to owner
+    await resend.emails.send({
+      from: ORDER_FROM,
+      to: ORDER_TO || body.customer.email,
       ...(ORDER_BCC ? { bcc: ORDER_BCC } : {}),
       replyTo: body.customer.email,
       subject: `🖼️ Νέα Παραγγελία — ${orderId}`,
-      text: ownerText,
-      html: ownerHTML,
+      text: buildText(fullPayload, orderId, false),
+      html: buildHTML(fullPayload, { orderId, forCustomer: false }),
     });
 
-    // email προς πελάτη (confirmation)
-    const customerHTML = buildHTML(
-      {
-        customer: body.customer,
-        items: body.items,
-        totals: { subtotal, shipping, total },
-      },
-      { orderId, forCustomer: true }
-    );
-    const customerText = buildText(
-      {
-        customer: body.customer,
-        items: body.items,
-        totals: { subtotal, shipping, total },
-      },
-      orderId,
-      true
-    );
-
-    await transporter.sendMail({
-      from: ORDER_FROM || process.env.SMTP_USER || "no-reply@example.com",
+    // Confirmation email to customer
+    await resend.emails.send({
+      from: ORDER_FROM,
       to: body.customer.email,
-      replyTo: ORDER_TO || process.env.SMTP_USER,
+      replyTo: ORDER_TO || ORDER_FROM,
       subject: `Η παραγγελία σας — ${BRAND_NAME} (${orderId})`,
-      text: customerText,
-      html: customerHTML,
+      text: buildText(fullPayload, orderId, true),
+      html: buildHTML(fullPayload, { orderId, forCustomer: true }),
     });
 
     return NextResponse.json({ ok: true, orderId });

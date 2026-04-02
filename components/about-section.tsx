@@ -16,7 +16,7 @@ export default function AboutSection() {
       },
       {
         threshold: 0.2,
-      }
+      },
     );
 
     if (sectionRef.current) {
@@ -42,8 +42,9 @@ export default function AboutSection() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
+          {/* First Column */}
           <div
-            className={`space-y-6 md:space-y-8 transition-all duration-700 ${
+            className={`space-y-10 md:space-y-12 transition-all duration-700 ${
               isVisible
                 ? "opacity-100 translate-x-0"
                 : "opacity-0 -translate-x-10"
@@ -55,65 +56,44 @@ export default function AboutSection() {
               </h2>
               <div className="font-mono text-xs md:text-sm leading-relaxed opacity-90">
                 <p>
-                  Like food photography, we seek to discover and portray what
-                  exists.
-                  <br className="hidden md:block" />
-                  <span className="md:hidden"> </span>
-                  Facts are crucial but alone aren't enough. Evidence and
-                  insights
-                  <br className="hidden md:block" />
-                  <span className="md:hidden"> </span>
-                  we're after. And we use our experience in culinary
-                  <br className="hidden md:block" />
-                  <span className="md:hidden"> </span>
-                  strategy to discover them quickly and rigorously.
+                  Passionate about shooting lands and food
+                  <br />
+                  humans and their stories
+                  <br />
+                  Discover and highlight the intricate details
+                  <br />
+                  to evoke emotions and moods
+                  <br />
+                  To create stories
                 </p>
               </div>
             </div>
 
             <div className="pl-6 md:pl-12">
               <h2 className="text-xl md:text-2xl font-mono mb-3 md:mb-4 tracking-wide">
-                and feelings
+                And feelings
               </h2>
               <div className="font-mono text-xs md:text-sm leading-relaxed opacity-90">
                 <p>
-                  Like painting, we look to uncover the emotions of our subject.
-                  <br className="hidden md:block" />
-                  <span className="md:hidden"> </span>
-                  Facts are crucial but alone aren't enough. Ideas, messages and
-                  subjects
-                  <br className="hidden md:block" />
-                  <span className="md:hidden"> </span>
-                  are things that need to be felt to be remembered. We use our
-                  experience
-                  <br className="hidden md:block" />
-                  <span className="md:hidden"> </span>
-                  in food marketing to uncover the full spectrum of feelings and
-                  emotions.
-                </p>
-              </div>
-            </div>
-
-            <div className="pl-3 md:pl-6">
-              <h2 className="text-xl md:text-2xl font-mono mb-3 md:mb-4 tracking-wide">
-                make creative solutions.
-              </h2>
-              <div className="font-mono text-xs md:text-sm leading-relaxed opacity-90">
-                <p>
-                  Our creative solutions come at the intersection of the facts
-                  we've discovered
-                  <br className="hidden md:block" />
-                  <span className="md:hidden"> </span>
-                  and the feelings we've uncovered. It is only then that the
-                  composition
-                  <br className="hidden md:block" />
-                  <span className="md:hidden"> </span>
-                  works to convince people to take action.
+                  The last light of the day
+                  <br />
+                  And the first
+                  <br />
+                  The clouds touching a mountain peak
+                  <br />
+                  A shy smile
+                  <br />
+                  A human movement
+                  <br />
+                  A pot boiling
+                  <br />
+                  The smoke of the fire
                 </p>
               </div>
             </div>
           </div>
 
+          {/* Second Column */}
           <div
             className={`transition-all duration-700 delay-300 ${
               isVisible
@@ -121,53 +101,44 @@ export default function AboutSection() {
                 : "opacity-0 translate-x-10"
             }`}
           >
-            <div className="space-y-6 md:space-y-8">
+            <div className="space-y-8 md:space-y-10">
               <div>
-                <h3 className="text-sm font-mono mb-3 md:mb-4 opacity-70">
-                  [PHILOSOPHY]
+                <h3 className="text-sm font-mono mb-3 md:mb-4 opacity-70 uppercase tracking-widest">
+                  [Approach]
                 </h3>
                 <div className="font-mono text-xs md:text-sm leading-relaxed opacity-90">
                   <p>
-                    Every dish tells a story.
+                    Documentary
                     <br />
-                    Every ingredient has a purpose.
+                    Atmospheric
                     <br />
-                    Every frame captures a moment
-                    <br />
-                    that connects people to food.
+                    Abstract
                   </p>
                 </div>
               </div>
 
               <div className="pl-3 md:pl-6">
-                <h3 className="text-sm font-mono mb-3 md:mb-4 opacity-70">
-                  [APPROACH]
+                <h3 className="text-sm font-mono mb-3 md:mb-4 opacity-70 uppercase tracking-widest">
+                  [Philosophy]
                 </h3>
                 <div className="font-mono text-xs md:text-sm leading-relaxed opacity-90">
                   <p>
-                    We don't just photograph food.
+                    Portraying the essence
                     <br />
-                    We capture the essence of culinary
-                    <br />
-                    craftsmanship, the passion behind
-                    <br />
-                    each creation, and the emotions
-                    <br />
-                    that great food evokes.
+                    Portraying the soul
                   </p>
                 </div>
               </div>
 
               <div className="pl-6 md:pl-12">
-                <h3 className="text-sm font-mono mb-3 md:mb-4 opacity-70">
+                <h3 className="text-sm font-mono mb-3 md:mb-4 opacity-70 uppercase tracking-widest">
                   [Culture]
                 </h3>
                 <div className="font-mono text-xs md:text-sm leading-relaxed opacity-90">
                   <p>
-                    GEORGE ADAMOS
+                    The classics
                     <br />
-                    Food & Travel Photographer
-                    <br />
+                    Black and white
                   </p>
                 </div>
               </div>
