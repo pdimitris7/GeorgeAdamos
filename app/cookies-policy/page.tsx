@@ -77,10 +77,10 @@ export default function CookiesPolicyPage() {
                 <strong className="text-white">George Adamos</strong>. For any
                 questions, contact us at{" "}
                 <a
-                  href="mailto:jorje.adamos@gmail.com"
+                  href="mailto:info@george-adamos.com"
                   className="text-white underline underline-offset-4"
                 >
-                  jorje.adamos@gmail.com
+                  info@george-adamos.com
                 </a>
                 .
               </p>

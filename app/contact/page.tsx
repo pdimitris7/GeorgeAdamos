@@ -145,10 +145,10 @@ export default function ContactPage() {
             <p className="font-mono text-xs text-white/30">
               Or reach me directly at{" "}
               <a
-                href="mailto:jorje.adamos@gmail.com"
+                href="mailto:info@george-adamos.com"
                 className="text-white/50 hover:text-white underline underline-offset-4 transition-colors"
               >
-                jorje.adamos@gmail.com
+                info@george-adamos.com
               </a>
             </p>
           </div>

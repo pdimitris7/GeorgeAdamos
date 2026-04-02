@@ -130,7 +130,7 @@ export default function PrintsSection() {
               space.
             </p>
             <Link
-              href="mailto:contact@georgeadamos.com"
+              href="mailto:info@george-adamos.com"
               className="inline-block px-8 py-3 bg-brown text-white rounded-md hover:bg-brown-light transition-colors"
             >
               Request Custom Print

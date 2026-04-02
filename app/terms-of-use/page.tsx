@@ -22,7 +22,7 @@ export default function TermsOfUsePage() {
             <section>
               <h2 className="text-white text-base mb-3">1. Acceptance of Terms</h2>
               <p>
-                By using this website (georgeadamos.com) you agree to these
+                By using this website (george-adamos.com) you agree to these
                 Terms of Use in full. If you do not agree, please do not use
                 the site.
               </p>
@@ -93,10 +93,10 @@ export default function TermsOfUsePage() {
                 For any questions regarding these Terms, please contact{" "}
                 <strong className="text-white">George Adamos</strong> at{" "}
                 <a
-                  href="mailto:jorje.adamos@gmail.com"
+                  href="mailto:info@george-adamos.com"
                   className="text-white underline underline-offset-4"
                 >
-                  jorje.adamos@gmail.com
+                  info@george-adamos.com
                 </a>
                 .
               </p>

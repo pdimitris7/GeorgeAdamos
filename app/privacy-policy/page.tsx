@@ -26,10 +26,10 @@ export default function PrivacyPolicyPage() {
                 <strong className="text-white">George Adamos</strong>. You can
                 reach us at{" "}
                 <a
-                  href="mailto:jorje.adamos@gmail.com"
+                  href="mailto:info@george-adamos.com"
                   className="text-white underline underline-offset-4"
                 >
-                  jorje.adamos@gmail.com
+                  info@george-adamos.com
                 </a>
                 .
               </p>
@@ -83,10 +83,10 @@ export default function PrivacyPolicyPage() {
                 data, as well as the right to object to its processing. To
                 submit a request, contact us at{" "}
                 <a
-                  href="mailto:jorje.adamos@gmail.com"
+                  href="mailto:info@george-adamos.com"
                   className="text-white underline underline-offset-4"
                 >
-                  jorje.adamos@gmail.com
+                  info@george-adamos.com
                 </a>
                 .
               </p>
@@ -105,10 +105,10 @@ export default function PrivacyPolicyPage() {
               <p>
                 For any questions regarding this policy, please contact us at{" "}
                 <a
-                  href="mailto:jorje.adamos@gmail.com"
+                  href="mailto:info@george-adamos.com"
                   className="text-white underline underline-offset-4"
                 >
-                  jorje.adamos@gmail.com
+                  info@george-adamos.com
                 </a>
                 .
               </p>

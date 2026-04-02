@@ -28,7 +28,7 @@ export default function Footer() {
               <Instagram size={24} />
             </Link>
             <Link
-              href="mailto:jorje.adamos@gmail.com"
+              href="mailto:info@george-adamos.com"
               className="hover:text-beige transition-colors"
               aria-label="Email"
             >
@@ -37,7 +37,7 @@ export default function Footer() {
           </div>
 
           <div className="text-center mb-8">
-            <p className="mb-2">jorje.adamos@gmail.com</p>
+            <p className="mb-2">info@george-adamos.com</p>
             <p>Athens, Greece</p>
           </div>
 

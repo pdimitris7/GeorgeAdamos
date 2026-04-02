@@ -35,10 +35,10 @@ type Payload = {
 
 /* ===================== HELPERS ===================== */
 const BRAND_NAME = process.env.BRAND_NAME || "George Adamos Prints";
-const BRAND_URL = process.env.BRAND_URL || "https://georgeadamos.com";
+const BRAND_URL = process.env.BRAND_URL || "https://george-adamos.com";
 const BRAND_LOGO = process.env.BRAND_LOGO || ""; // optional logo URL
 const ORDER_TO = process.env.ORDER_TO || "";
-const ORDER_FROM = process.env.ORDER_FROM || "orders@georgeadamos.com";
+const ORDER_FROM = process.env.ORDER_FROM || "orders@george-adamos.com";
 const ORDER_BCC = process.env.ORDER_BCC || "";
 
 function euro(n: number) {

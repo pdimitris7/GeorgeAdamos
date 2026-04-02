@@ -8,7 +8,7 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
   },
   experimental: {
-    serverComponentsExternalPackages: ["nodemailer"],
+    serverComponentsExternalPackages: ["resend"],
   },
   // Κάνει πιο «καθαρό» slug για Heroku
   output: "standalone",
