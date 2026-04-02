@@ -4,7 +4,7 @@ import { getPortfolioBySlug, getPortfolioHighlights } from "@/lib/sanity.base";
 
 import Navigation from "@/components/navigation";
 import Footer from "@/components/footer";
-
+import ScrollToTop from "@/components/scroll-to-top";
 import PortfolioView from "@/components/portfolio-view";
 import PortfolioHighlights from "@/components/portfolio-highlights";
 
@@ -37,6 +37,7 @@ export default async function PortfolioProjectPage({
 
   return (
     <>
+      <ScrollToTop />
       <Navigation />
 
       <main>
