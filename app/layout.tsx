@@ -2,6 +2,7 @@
 import "./globals.css";
 import { Montserrat, Playfair_Display } from "next/font/google";
 import type { Metadata } from "next";
+import ScrollToTop from "@/components/scroll-to-top";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -33,6 +34,7 @@ export default function RootLayout({
       <body
         className={`${montserrat.variable} ${playfair.variable} font-sans bg-background text-foreground`}
       >
+        <ScrollToTop />
         {children}
         {modal /* 👈 εδώ θα «κάθεται» το overlay modal */}
       </body>
