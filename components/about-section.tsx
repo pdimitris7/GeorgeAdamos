@@ -51,66 +51,30 @@ export default function AboutSection() {
           >
             <div>
               <h2 className="text-lg md:text-xl font-mono mb-3 md:mb-4 tracking-wide">
-                Facts
+                Passionate about shooting lands and food
               </h2>
               <div className="font-mono text-xs md:text-sm leading-relaxed opacity-90">
                 <p>
-                  Like food photography, we seek to discover and portray what
-                  exists.
-                  <br className="hidden md:block" />
-                  <span className="md:hidden"> </span>
-                  Facts are crucial but alone aren't enough. Evidence and
-                  insights
-                  <br className="hidden md:block" />
-                  <span className="md:hidden"> </span>
-                  we're after. And we use our experience in culinary
-                  <br className="hidden md:block" />
-                  <span className="md:hidden"> </span>
-                  strategy to discover them quickly and rigorously.
+                  humans and their stories
                 </p>
               </div>
             </div>
 
             <div className="pl-6 md:pl-12">
               <h2 className="text-xl md:text-2xl font-mono mb-3 md:mb-4 tracking-wide">
-                and feelings
+                Discover and highlight the intricate details
               </h2>
               <div className="font-mono text-xs md:text-sm leading-relaxed opacity-90">
                 <p>
-                  Like painting, we look to uncover the emotions of our subject.
-                  <br className="hidden md:block" />
-                  <span className="md:hidden"> </span>
-                  Facts are crucial but alone aren't enough. Ideas, messages and
-                  subjects
-                  <br className="hidden md:block" />
-                  <span className="md:hidden"> </span>
-                  are things that need to be felt to be remembered. We use our
-                  experience
-                  <br className="hidden md:block" />
-                  <span className="md:hidden"> </span>
-                  in food marketing to uncover the full spectrum of feelings and
-                  emotions.
+                  to evoke emotions and moods
                 </p>
               </div>
             </div>
 
             <div className="pl-3 md:pl-6">
               <h2 className="text-xl md:text-2xl font-mono mb-3 md:mb-4 tracking-wide">
-                make creative solutions.
+                To create stories
               </h2>
-              <div className="font-mono text-xs md:text-sm leading-relaxed opacity-90">
-                <p>
-                  Our creative solutions come at the intersection of the facts
-                  we've discovered
-                  <br className="hidden md:block" />
-                  <span className="md:hidden"> </span>
-                  and the feelings we've uncovered. It is only then that the
-                  composition
-                  <br className="hidden md:block" />
-                  <span className="md:hidden"> </span>
-                  works to convince people to take action.
-                </p>
-              </div>
             </div>
           </div>
 
