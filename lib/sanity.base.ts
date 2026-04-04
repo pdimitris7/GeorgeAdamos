@@ -132,7 +132,7 @@ export async function getHomePortfolioProjects(): Promise<PortfolioProject[]> {
         ${PORTFOLIO_FIELDS}
       }
   `;
-  return client.fetch(QUERY, {}, { perspective: "published" });
+  return client.fetch(QUERY, {}, { perspective: "published", cache: "no-store" });
 }
 
 export async function getAllPortfolioProjects(): Promise<PortfolioProject[]> {
@@ -142,7 +142,7 @@ export async function getAllPortfolioProjects(): Promise<PortfolioProject[]> {
         ${PORTFOLIO_FIELDS}
       }
   `;
-  return client.fetch(QUERY, {}, { perspective: "published" });
+  return client.fetch(QUERY, {}, { perspective: "published", cache: "no-store" });
 }
 
 export async function getPortfolioBySlug(
@@ -153,7 +153,7 @@ export async function getPortfolioBySlug(
       ${PORTFOLIO_FIELDS}
     }
   `;
-  return client.fetch(QUERY, { slug }, { perspective: "published" });
+  return client.fetch(QUERY, { slug }, { perspective: "published", cache: "no-store" });
 }
 
 /* =========================================
@@ -166,7 +166,7 @@ export async function getHomeMediaPosts(): Promise<MediaPost[]> {
         ${MEDIA_FIELDS}
       }
   `;
-  return client.fetch(QUERY, {}, { perspective: "published" });
+  return client.fetch(QUERY, {}, { perspective: "published", cache: "no-store" });
 }
 
 export async function getAllMediaPosts(): Promise<MediaPost[]> {
@@ -176,7 +176,7 @@ export async function getAllMediaPosts(): Promise<MediaPost[]> {
         ${MEDIA_FIELDS}
       }
   `;
-  return client.fetch(QUERY, {}, { perspective: "published" });
+  return client.fetch(QUERY, {}, { perspective: "published", cache: "no-store" });
 }
 
 export async function getMediaBySlug(slug: string): Promise<MediaPost | null> {
@@ -187,7 +187,7 @@ export async function getMediaBySlug(slug: string): Promise<MediaPost | null> {
       "gallery": gallery[defined(asset)]
     }
   `;
-  return client.fetch(QUERY, { slug }, { perspective: "published" });
+  return client.fetch(QUERY, { slug }, { perspective: "published", cache: "no-store" });
 }
 /* =========================================
    QUERIES – PRINTS
@@ -199,7 +199,7 @@ export async function getAllPrints(): Promise<Print[]> {
         ${PRINT_FIELDS}
       }
   `;
-  return client.fetch(QUERY, {}, { perspective: "published" });
+  return client.fetch(QUERY, {}, { perspective: "published", cache: "no-store" });
 }
 
 export async function getPrintBySlug(slug: string): Promise<Print | null> {
@@ -208,7 +208,7 @@ export async function getPrintBySlug(slug: string): Promise<Print | null> {
       ${PRINT_FIELDS}
     }
   `;
-  return client.fetch(QUERY, { slug }, { perspective: "published" });
+  return client.fetch(QUERY, { slug }, { perspective: "published", cache: "no-store" });
 }
 
 export async function getPortfolioHighlights(limit = 20, excludeSlug?: string) {
@@ -222,14 +222,10 @@ export async function getPortfolioHighlights(limit = 20, excludeSlug?: string) {
     title,
     category,
     "slug": slug.current,
-    // Εικόνα με ασφαλές coalesce (και fallback σε gallery[0])
     "heroImage": coalesce(heroImage, coverImage, mainImage, image, select(defined(gallery[0]) => gallery[0], null))
   }`;
 
-  return client.fetch(q, {
-    limit,
-    excludeSlug: excludeSlug ?? "",
-  });
+  return client.fetch(q, { limit, excludeSlug: excludeSlug ?? "" }, { cache: "no-store" });
 }
 
 /* =========================================
