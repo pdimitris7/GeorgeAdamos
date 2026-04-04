@@ -21,13 +21,15 @@ function galleryItemUrl(item: GalleryItem, w: number, h: number): string {
   }
 }
 
-/** Map size string → Tailwind col/row span classes (4-col grid) */
-function sizeToClasses(size: string) {
+/** Map size string → Tailwind col/row span classes.
+ *  Mobile: always full width (col-span-1 in a 1-col grid).
+ *  Desktop (md+): masonry spans apply. */
+function sizeToClasses(size: string): string {
   switch (size) {
-    case "2x1": return { span: "col-span-2 row-span-1", aspect: "aspect-[2/1]" };
-    case "1x2": return { span: "col-span-1 row-span-2", aspect: "aspect-[1/2]" };
-    case "2x2": return { span: "col-span-2 row-span-2", aspect: "aspect-square" };
-    default:    return { span: "col-span-1 row-span-1", aspect: "aspect-square" };
+    case "2x1": return "col-span-1 md:col-span-2 md:row-span-1";
+    case "1x2": return "col-span-1 md:col-span-1 md:row-span-2";
+    case "2x2": return "col-span-1 md:col-span-2 md:row-span-2";
+    default:    return "col-span-1 md:col-span-1 md:row-span-1";
   }
 }
 
@@ -92,18 +94,15 @@ export default function PortfolioView({
       {/* ── Masonry Gallery ── */}
       {gallery.length > 0 && (
         <section className="px-3 sm:px-4 md:px-6 pb-16 max-w-7xl mx-auto">
-          {/*
-            4-column grid on desktop, 2-column on mobile.
-            grid-auto-rows: each "row unit" = 280px on desktop.
-            Sizes: 1x1 = 1 col × 1 row, 2x1 = 2 col × 1 row, etc.
-          */}
+          {/* Mobile: 1 column, each image full width with natural aspect ratio.
+              Desktop (md+): 4-column masonry with row/col spans per image size. */}
           <div
-            className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3"
+            className="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-3"
             style={{ gridAutoRows: "clamp(160px, 22vw, 320px)" }}
           >
             {gallery.map((item, index) => {
               const size = item.size || "1x1";
-              const { span, aspect } = sizeToClasses(size);
+              const span = sizeToClasses(size);
               const { w, h } = sizeToPixels(size);
               const src = galleryItemUrl(item, w, h);
               const alt = item.alt || `${project.title} — ${index + 1}`;
@@ -111,13 +110,13 @@ export default function PortfolioView({
               return (
                 <div
                   key={item._key || index}
-                  className={`${span} relative overflow-hidden bg-gray-100 group`}
+                  className={`${span} relative overflow-hidden bg-gray-100 group min-h-[260px] md:min-h-0`}
                 >
                   <Image
                     src={src}
                     alt={alt}
                     fill
-                    sizes="(min-width: 768px) 25vw, 50vw"
+                    sizes="(min-width: 768px) 25vw, 100vw"
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 </div>
