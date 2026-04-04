@@ -41,13 +41,14 @@ export default defineType({
       name: "gallery",
       title: "Gallery Images",
       description:
-        "Drag images to reorder. Choose a size for each to control the masonry layout.",
+        "Add items with '+ Add item'. Delete any old invalid items and re-add them to get the size picker.",
       type: "array",
       of: [
+        // ── New format: image + size + alt ──
         {
           type: "object",
           name: "galleryItem",
-          title: "Image",
+          title: "Image with size",
           fields: [
             defineField({
               name: "image",
@@ -91,6 +92,11 @@ export default defineType({
               };
             },
           },
+        },
+        // ── Legacy format: plain image (kept so old items don't error) ──
+        {
+          type: "image",
+          options: { hotspot: true },
         },
       ],
     }),

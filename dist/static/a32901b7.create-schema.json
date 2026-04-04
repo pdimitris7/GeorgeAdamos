@@ -73,7 +73,7 @@
         "type": "image"
       },
       {
-        "description": "Drag images to reorder. Choose a size for each to control the masonry layout.",
+        "description": "Add items with '+ Add item'. Delete any old invalid items and re-add them to get the size picker.",
         "of": [
           {
             "fields": [
@@ -129,7 +129,13 @@
             ],
             "type": "object",
             "name": "galleryItem",
-            "title": "Image"
+            "title": "Image with size"
+          },
+          {
+            "options": {
+              "hotspot": true
+            },
+            "type": "image"
           }
         ],
         "name": "gallery",
