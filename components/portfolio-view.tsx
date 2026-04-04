@@ -21,15 +21,15 @@ function galleryItemUrl(item: GalleryItem, w: number, h: number): string {
   }
 }
 
-/** Map size string → Tailwind col/row span classes.
- *  Mobile: always full width (col-span-1 in a 1-col grid).
- *  Desktop (md+): masonry spans apply. */
+/** Map size string → Tailwind classes.
+ *  Mobile: full width with aspect ratio matching the chosen size.
+ *  Desktop (md+): masonry col/row spans, aspect overridden by grid rows. */
 function sizeToClasses(size: string): string {
   switch (size) {
-    case "2x1": return "col-span-1 md:col-span-2 md:row-span-1";
-    case "1x2": return "col-span-1 md:col-span-1 md:row-span-2";
-    case "2x2": return "col-span-1 md:col-span-2 md:row-span-2";
-    default:    return "col-span-1 md:col-span-1 md:row-span-1";
+    case "2x1": return "col-span-1 aspect-[3/2] md:aspect-auto md:col-span-2 md:row-span-1";
+    case "1x2": return "col-span-1 aspect-[2/3] md:aspect-auto md:col-span-1 md:row-span-2";
+    case "2x2": return "col-span-1 aspect-square md:aspect-auto md:col-span-2 md:row-span-2";
+    default:    return "col-span-1 aspect-[3/2] md:aspect-auto md:col-span-1 md:row-span-1";
   }
 }
 
@@ -109,7 +109,7 @@ export default function PortfolioView({
               return (
                 <div
                   key={item._key || index}
-                  className={`${span} relative overflow-hidden bg-gray-100 group aspect-[4/3] md:aspect-auto`}
+                  className={`${span} relative overflow-hidden bg-gray-100 group`}
                 >
                   <Image
                     src={src}
