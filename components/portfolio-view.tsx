@@ -10,12 +10,12 @@ const builder = createImageUrlBuilder({ projectId, dataset });
 
 /** Build a URL from a resolved gallery item (asset + hotspot + crop) */
 function galleryItemUrl(item: GalleryItem, w: number, h: number): string {
-  if (!item?.asset || !builder) return "/placeholder.svg";
+  if (!item?.asset) return "/placeholder.svg";
   try {
-    let b = builder.image({ asset: item.asset });
-    if (item.hotspot) b = b.hotspot(item.hotspot);
-    if (item.crop) b = b.crop(item.crop);
-    return b.width(w).height(h).fit("crop").url();
+    const src: any = { asset: item.asset };
+    if (item.hotspot) src.hotspot = item.hotspot;
+    if (item.crop) src.crop = item.crop;
+    return builder.image(src).width(w).height(h).fit("crop").url();
   } catch {
     return "/placeholder.svg";
   }
