@@ -4,10 +4,9 @@ import { type PortfolioProject, type GalleryItem } from "@/lib/sanity-public";
 import { hasImageAsset, stableKey, imgUrl } from "./portfolio-utils";
 import createImageUrlBuilder from "@sanity/image-url";
 
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "";
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "";
-const builder =
-  projectId && dataset ? createImageUrlBuilder({ projectId, dataset }) : null;
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "fyr1ddav";
+const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
+const builder = createImageUrlBuilder({ projectId, dataset });
 
 /** Build a URL from a resolved gallery item (asset + hotspot + crop) */
 function galleryItemUrl(item: GalleryItem, w: number, h: number): string {

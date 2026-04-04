@@ -2,20 +2,10 @@
 import createImageUrlBuilder from "@sanity/image-url";
 
 /* Public ENV για browser */
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "";
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "";
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "fyr1ddav";
+const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
 
-if (typeof window !== "undefined") {
-  if (!projectId || !dataset) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      "[sanity-public] Missing NEXT_PUBLIC_SANITY_PROJECT_ID / NEXT_PUBLIC_SANITY_DATASET"
-    );
-  }
-}
-
-const builder =
-  projectId && dataset ? createImageUrlBuilder({ projectId, dataset }) : null;
+const builder = createImageUrlBuilder({ projectId, dataset });
 
 /** Επιστρέφει builder για chaining: .width(...).height(...).fit("max").url() */
 export function urlForImage(source?: any) {

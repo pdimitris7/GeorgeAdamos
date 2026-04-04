@@ -216,6 +216,7 @@ export async function getPortfolioHighlights(limit = 20, excludeSlug?: string) {
     _type in ["portfolioProject", "portfolio", "project"]
     && defined(slug.current)
     && slug.current != $excludeSlug
+    && !(_id in path("drafts.**"))
   ] | order(coalesce(_updatedAt, _createdAt) desc)[0...$limit]{
     _id,
     title,
