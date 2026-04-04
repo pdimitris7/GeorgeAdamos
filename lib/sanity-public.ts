@@ -30,6 +30,15 @@ export function urlForImage(source?: any) {
 /* ===== Types που χρειάζονται σε client components ===== */
 export type Slug = { current: string };
 
+export type GalleryItem = {
+  _key: string;
+  size: "1x1" | "2x1" | "1x2" | "2x2";
+  alt?: string;
+  asset: any;
+  hotspot?: any;
+  crop?: any;
+};
+
 export type PortfolioProject = {
   _id: string;
   title: string;
@@ -40,7 +49,7 @@ export type PortfolioProject = {
   gridClass?: string;
   order?: number;
   isFeatured?: boolean;
-  gallery?: any[];
+  gallery?: GalleryItem[];
 };
 
 export type MediaPost = {

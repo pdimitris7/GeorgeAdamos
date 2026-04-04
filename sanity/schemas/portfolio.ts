@@ -20,7 +20,6 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
 
-    // Free text (Ο χρήστης γράφει ό,τι θέλει)
     defineField({
       name: "category",
       title: "Category",
@@ -37,12 +36,63 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
 
-    // Εμφανίζεται κανονικά στο Studio
+    // Masonry gallery — drag to reorder, pick size per image
     defineField({
       name: "gallery",
       title: "Gallery Images",
+      description:
+        "Drag images to reorder. Choose a size for each to control the masonry layout.",
       type: "array",
-      of: [{ type: "image", options: { hotspot: true } }],
+      of: [
+        {
+          type: "object",
+          name: "galleryItem",
+          title: "Image",
+          fields: [
+            defineField({
+              name: "image",
+              title: "Image",
+              type: "image",
+              options: { hotspot: true },
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: "size",
+              title: "Size",
+              type: "string",
+              initialValue: "1x1",
+              options: {
+                list: [
+                  { title: "Standard (1×1)", value: "1x1" },
+                  { title: "Wide (2×1 — landscape)", value: "2x1" },
+                  { title: "Tall (1×2 — portrait)", value: "1x2" },
+                  { title: "Large (2×2 — featured)", value: "2x2" },
+                ],
+                layout: "radio",
+              },
+            }),
+            defineField({
+              name: "alt",
+              title: "Alt text (optional)",
+              type: "string",
+            }),
+          ],
+          preview: {
+            select: {
+              media: "image",
+              size: "size",
+              alt: "alt",
+            },
+            prepare({ media, size, alt }) {
+              return {
+                title: alt || "Image",
+                subtitle: size || "1x1",
+                media,
+              };
+            },
+          },
+        },
+      ],
     }),
 
     defineField({

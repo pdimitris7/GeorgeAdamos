@@ -48,6 +48,15 @@ export const client = createClient({
    ========================================= */
 export type Slug = { current: string };
 
+export type GalleryItem = {
+  _key: string;
+  size: "1x1" | "2x1" | "1x2" | "2x2";
+  alt?: string;
+  asset: any;
+  hotspot?: any;
+  crop?: any;
+};
+
 export type PortfolioProject = {
   _id: string;
   title: string;
@@ -58,7 +67,7 @@ export type PortfolioProject = {
   gridClass?: string;
   order?: number;
   isFeatured?: boolean;
-  gallery?: any[];
+  gallery?: GalleryItem[];
 };
 
 export type MediaPost = {
@@ -93,7 +102,14 @@ export type Print = {
    ========================================= */
 const PORTFOLIO_FIELDS = `
   _id, title, slug, category, heroImage, description, gridClass, order, isFeatured,
-  "gallery": gallery[defined(asset)]
+  "gallery": gallery[]{
+    "_key": _key,
+    "size": coalesce(size, "1x1"),
+    "alt": alt,
+    "asset": coalesce(image.asset, asset),
+    "hotspot": coalesce(image.hotspot, hotspot),
+    "crop": coalesce(image.crop, crop)
+  }
 `;
 const MEDIA_FIELDS = `
   _id, title, slug, publication, category, excerpt,
