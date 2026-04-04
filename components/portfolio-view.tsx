@@ -93,12 +93,11 @@ export default function PortfolioView({
 
       {/* ── Masonry Gallery ── */}
       {gallery.length > 0 && (
-        <section className="px-3 sm:px-4 md:px-6 pb-16 max-w-7xl mx-auto">
-          {/* Mobile: 1 column, each image full width with natural aspect ratio.
-              Desktop (md+): 4-column masonry with row/col spans per image size. */}
+        <section className="px-4 md:px-6 pb-20 md:pb-16 max-w-7xl mx-auto">
+          {/* Mobile: 1 column, each image 4:3 aspect ratio, full width.
+              Desktop (md+): 4-column masonry grid with row/col spans per size. */}
           <div
-            className="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-3"
-            style={{ gridAutoRows: "clamp(160px, 22vw, 320px)" }}
+            className="grid grid-cols-1 md:grid-cols-4 gap-3 md:[grid-auto-rows:clamp(160px,22vw,320px)]"
           >
             {gallery.map((item, index) => {
               const size = item.size || "1x1";
@@ -110,7 +109,7 @@ export default function PortfolioView({
               return (
                 <div
                   key={item._key || index}
-                  className={`${span} relative overflow-hidden bg-gray-100 group min-h-[260px] md:min-h-0`}
+                  className={`${span} relative overflow-hidden bg-gray-100 group aspect-[4/3] md:aspect-auto`}
                 >
                   <Image
                     src={src}
