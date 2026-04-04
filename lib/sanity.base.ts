@@ -24,8 +24,8 @@ const apiVersionRaw =
 const apiVersion = apiVersionRaw.replace(/^v/i, "");
 
 const token = process.env.SANITY_READ_TOKEN;
-// Private dataset ⇒ CDN δεν δουλεύει. Με token -> useCdn: false
-const useCdn = token ? false : true;
+// useCdn: false → always fresh data (no CDN caching delay)
+const useCdn = false;
 
 if (!projectId || !dataset) {
   throw new Error(
@@ -161,7 +161,7 @@ export async function getPortfolioBySlug(
    ========================================= */
 export async function getHomeMediaPosts(): Promise<MediaPost[]> {
   const QUERY = groq`
-    *[_type == "mediaPost" && coalesce(showOnHome, false) == true && !(_id in path("drafts.**"))]
+    *[_type == "mediaPost" && showOnHome == true && !(_id in path("drafts.**"))]
       | order(coalesce(order, 999) asc, _createdAt desc) {
         ${MEDIA_FIELDS}
       }
