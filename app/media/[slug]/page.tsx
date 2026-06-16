@@ -72,8 +72,8 @@ export default async function MediaPostPage({ params }: Props) {
 
       {/* Gallery */}
       {Array.isArray(post.gallery) && post.gallery.length > 0 ? (
-        <div className="space-y-0">
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 px-3 sm:px-4">
+        <div className="flex flex-col gap-3 sm:gap-4 px-3 sm:px-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {post.gallery.slice(0, 2).map((img: any, i: number) => (
               <div
                 key={img._key || i}
@@ -97,27 +97,25 @@ export default async function MediaPostPage({ params }: Props) {
           </div>
 
           {post.gallery[2] && (
-            <div className="px-3 sm:px-4 pt-3 sm:pt-4">
-              <div className="relative aspect-[16/9] overflow-hidden rounded-md">
-                <Image
-                  src={
-                    urlForImage(post.gallery[2])
-                      ?.width(1920)
-                      .height(1080)
-                      .fit("max")
-                      .url() || "/placeholder.svg"
-                  }
-                  alt="Gallery wide"
-                  fill
-                  sizes="100vw"
-                  className="object-cover"
-                />
-              </div>
+            <div className="relative aspect-[16/9] overflow-hidden rounded-md">
+              <Image
+                src={
+                  urlForImage(post.gallery[2])
+                    ?.width(1920)
+                    .height(1080)
+                    .fit("max")
+                    .url() || "/placeholder.svg"
+                }
+                alt="Gallery wide"
+                fill
+                sizes="100vw"
+                className="object-cover"
+              />
             </div>
           )}
 
           {post.gallery.length > 3 && (
-            <div className="grid grid-cols-4 gap-3 sm:gap-4 px-3 sm:px-4 pt-3 sm:pt-4">
+            <div className="grid grid-cols-4 gap-3 sm:gap-4">
               {post.gallery.slice(3).map((img: any, i: number) => (
                 <div
                   key={img._key || i}
