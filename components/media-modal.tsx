@@ -171,13 +171,13 @@ export default function MediaModal({ post, onClose }: Props) {
 
             {/* GALLERY (responsive) */}
             {rows.length ? (
-              <div className="space-y-0">
+              <div className="flex flex-col gap-3 sm:gap-4 px-3 sm:px-4">
                 {rows.map((row, rIdx) => {
                   if (row.kind === "two") {
                     return (
                       <div
                         key={`row-${rIdx}`}
-                        className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 px-3 sm:px-4"
+                        className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
                       >
                         {row.images.map((img, i) => (
                           <div
@@ -207,23 +207,21 @@ export default function MediaModal({ post, onClose }: Props) {
                     return (
                       <div
                         key={`row-${rIdx}`}
-                        className="px-3 sm:px-4 pt-3 sm:pt-4"
+                        className="relative aspect-[16/9] overflow-hidden rounded-md"
                       >
-                        <div className="relative aspect-[16/9] overflow-hidden rounded-md">
-                          <Image
-                            src={
-                              urlForImage(row.images[0])
-                                ?.width(1920)
-                                .height(1080)
-                                .fit("max")
-                                .url() || "/placeholder.svg"
-                            }
-                            alt={`Gallery ${rIdx}-0`}
-                            fill
-                            sizes="100vw"
-                            className="object-cover"
-                          />
-                        </div>
+                        <Image
+                          src={
+                            urlForImage(row.images[0])
+                              ?.width(1920)
+                              .height(1080)
+                              .fit("max")
+                              .url() || "/placeholder.svg"
+                          }
+                          alt={`Gallery ${rIdx}-0`}
+                          fill
+                          sizes="100vw"
+                          className="object-cover"
+                        />
                       </div>
                     );
                   }
@@ -232,7 +230,7 @@ export default function MediaModal({ post, onClose }: Props) {
                   return (
                     <div
                       key={`row-${rIdx}`}
-                      className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 px-3 sm:px-4 pt-3 sm:pt-4"
+                      className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4"
                     >
                       {row.images.map((img, i) => (
                         <div
